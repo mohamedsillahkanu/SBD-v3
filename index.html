@@ -485,23 +485,19 @@
 
                     <!-- CONTROLS BAR -->
                     <div class="controls-bar">
-                        <button class="control-btn" id="viewDataBtn">
+                        <button class="control-btn" id="viewDataBtn" onclick="guardedAction('viewData')">
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3zM3 9h18M9 21V9"/></svg>
                             VIEW DATA
                         </button>
-                        <button class="control-btn" id="downloadDataBtn">
+                        <button class="control-btn" id="downloadDataBtn" onclick="guardedAction('download')">
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                             DOWNLOAD
                         </button>
-                        <button class="control-btn" id="viewAnalysisBtn" onclick="openAnalysisModal()">
+                        <button class="control-btn" id="viewAnalysisBtn" onclick="guardedAction('analysis')">
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
                             ANALYSIS
                         </button>
-                        <button class="control-btn draft-btn" id="viewDraftsBtn">
-                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                            DRAFTS
-                        </button>
-                        <button class="control-btn" id="viewSummaryBtn" onclick="viewSummary()">
+                        <button class="control-btn" id="viewSummaryBtn" onclick="guardedAction('summary')">
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
                             SUMMARY
                         </button>
@@ -509,15 +505,107 @@
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0115.36-6.36L21 8M3 22v-6h6M21 12a9 9 0 01-15.36 6.36L3 16"/></svg>
                             UPDATE
                         </button>
-                        <button class="control-btn" id="aiAgentBtn" onclick="icfAiOpen()" style="background:linear-gradient(135deg,#004080,#0066cc);color:#fff;border-color:#004080;">
+                        <button class="control-btn" id="aiAgentBtn" onclick="guardedAction('ai')" style="background:linear-gradient(135deg,#004080,#0066cc);color:#fff;border-color:#004080;">
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/></svg>
                             AI AGENT
                         </button>
-                        <button class="control-btn" id="videoGuideBtn" onclick="openVideoModal()" style="background:linear-gradient(135deg,#1a5a1a,#28a745);color:#fff;border-color:#28a745;">
+                        <button onclick="openVideoModal()" class="control-btn" id="videoGuideBtn" style="background:linear-gradient(135deg,#1a5a1a,#28a745);color:#fff;border-color:#28a745;">
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
                             VIDEO GUIDE
                         </button>
+                        <button onclick="document.getElementById('targetsFileInput').click()" class="control-btn" id="targetsBtn" style="background:linear-gradient(135deg,#5a1a6a,#9b27af);color:#fff;border-color:#9b27af;" title="Upload targets CSV">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            TARGETS
+                        </button>
+                        <input type="file" id="targetsFileInput" accept=".csv" style="display:none" onchange="loadTargetsFile(this)">
                     </div>
+
+                    <!-- PASSWORD MODAL -->
+                    <div id="pwdModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9500;align-items:center;justify-content:center;" onclick="if(event.target===this)closePwdModal()">
+                        <div style="background:#fff;border-radius:14px;padding:32px 28px;width:100%;max-width:340px;box-shadow:0 16px 50px rgba(0,0,0,.3);">
+                            <div style="text-align:center;margin-bottom:20px;">
+                                <div style="width:48px;height:48px;background:linear-gradient(135deg,#002d5a,#004080);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" width="22" height="22"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                                </div>
+                                <div style="font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;color:#004080;letter-spacing:.5px;text-transform:uppercase;">Access Required</div>
+                                <div style="font-size:12px;color:#888;margin-top:4px;" id="pwdModalLabel">Enter password to continue</div>
+                            </div>
+                            <input type="password" id="pwdInput" placeholder="Password"
+                                style="width:100%;padding:11px 14px;border:2px solid #d0d8e0;border-radius:9px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;margin-bottom:8px;transition:border .2s;"
+                                onfocus="this.style.borderColor='#004080'" onblur="this.style.borderColor='#d0d8e0'"
+                                onkeydown="if(event.key==='Enter')submitPwd()">
+                            <div id="pwdError" style="color:#dc3545;font-size:12px;margin-bottom:10px;display:none;text-align:center;">Incorrect password. Try again.</div>
+                            <div style="display:flex;gap:8px;">
+                                <button onclick="closePwdModal()" style="flex:1;padding:11px;background:#f4f7fa;color:#607080;border:1.5px solid #d0d8e0;border-radius:9px;font-family:'Oswald',sans-serif;font-size:13px;cursor:pointer;letter-spacing:.5px;">CANCEL</button>
+                                <button onclick="submitPwd()" style="flex:2;padding:11px;background:#004080;color:#fff;border:none;border-radius:9px;font-family:'Oswald',sans-serif;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.5px;">UNLOCK</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                    // ── Password gate ────────────────────────────────
+                    const PROTECTED_PASS = 'admin123';
+                    let _pwdUnlocked = false;   // stays unlocked for the session
+                    let _pwdPendingAction = null;
+
+                    window.guardedAction = function(action) {
+                        if (_pwdUnlocked) { _executeAction(action); return; }
+                        _pwdPendingAction = action;
+                        const labels = {
+                            viewData:'View Data — Supervisor Access',
+                            download:'Download Data — Supervisor Access',
+                            analysis:'Analysis Dashboard — Supervisor Access',
+                            summary: 'School Summary — Supervisor Access',
+                            ai:      'AI Agent — Supervisor Access'
+                        };
+                        document.getElementById('pwdModalLabel').textContent = labels[action] || 'Enter password to continue';
+                        document.getElementById('pwdError').style.display = 'none';
+                        document.getElementById('pwdInput').value = '';
+                        const modal = document.getElementById('pwdModal');
+                        modal.style.display = 'flex';
+                        setTimeout(() => document.getElementById('pwdInput').focus(), 100);
+                    };
+
+                    window.submitPwd = function() {
+                        const val = document.getElementById('pwdInput').value;
+                        if (val === PROTECTED_PASS) {
+                            _pwdUnlocked = true;
+                            closePwdModal();
+                            if (_pwdPendingAction) { _executeAction(_pwdPendingAction); _pwdPendingAction = null; }
+                        } else {
+                            document.getElementById('pwdError').style.display = 'block';
+                            document.getElementById('pwdInput').value = '';
+                            document.getElementById('pwdInput').focus();
+                            // shake animation
+                            const inp = document.getElementById('pwdInput');
+                            inp.style.borderColor = '#dc3545';
+                            inp.style.animation = 'pwdShake .3s ease';
+                            setTimeout(() => { inp.style.animation = ''; inp.style.borderColor = '#d0d8e0'; }, 400);
+                        }
+                    };
+
+                    window.closePwdModal = function() {
+                        document.getElementById('pwdModal').style.display = 'none';
+                        _pwdPendingAction = null;
+                    };
+
+                    function _executeAction(action) {
+                        if (action === 'viewData')  { window.open('https://docs.google.com/spreadsheets/d/1cXlYiTMzcRP1BCj9mt1JXoK_pjgWbRtDEEQUPMg2HPs/edit?usp=sharing','_blank'); }
+                        if (action === 'download')  { window._downloadData && window._downloadData(); }
+                        if (action === 'analysis')  { window.openAnalysisModal && window.openAnalysisModal(); }
+                        if (action === 'summary')   { window.openSummaryModal && window.openSummaryModal(); }
+                        if (action === 'ai')        { window.icfAiOpen && window.icfAiOpen(); }
+                    }
+                    </script>
+                    <style>
+                    @keyframes pwdShake {
+                        0%,100%{transform:translateX(0)}
+                        20%{transform:translateX(-6px)}
+                        40%{transform:translateX(6px)}
+                        60%{transform:translateX(-4px)}
+                        80%{transform:translateX(4px)}
+                    }
+                    </style>
 
                     <!-- FORM CARD -->
                     <div class="form-card">
@@ -835,32 +923,47 @@
                 </div>
 
                 <!-- Cascading filter bar -->
-                <div style="background:#e8f1fa;border-bottom:2px solid #c5d9f0;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;flex-shrink:0;">
-                    <div style="flex:1;min-width:100px;">
-                        <div style="font-family:'Oswald',sans-serif;font-size:9px;color:#607080;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px;">District</div>
-                        <select id="af_district" onchange="afCascade('district')" style="width:100%;padding:6px 9px;border:1.5px solid #b0c8e0;border-radius:6px;font-size:12px;font-family:'Oswald',sans-serif;background:#fff;outline:none;"><option value="">All Districts</option></select>
+                <div style="background:#e8f1fa;border-bottom:2px solid #c5d9f0;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;flex-shrink:0;">
+                    <style>
+                    .af-grp{display:flex;flex-direction:column;flex:1;min-width:95px;}
+                    .af-lbl{font-family:'Oswald',sans-serif;font-size:9px;color:#607080;letter-spacing:.6px;text-transform:uppercase;margin-bottom:3px;font-weight:600;}
+                    .af-sel{width:100%;padding:7px 10px;border:2px solid #b0c8e0;border-radius:8px;font-size:12px;font-family:'Oswald',sans-serif;background:#fff;outline:none;cursor:pointer;transition:border-color .15s,background .15s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23607080' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;}
+                    .af-sel:focus{border-color:#004080;background-color:#f0f6ff;}
+                    .af-sel:disabled{background:#f4f7fa;color:#aaa;cursor:not-allowed;border-color:#d0dce8;}
+                    .af-sel option{font-family:sans-serif;}
+                    .af-btn{padding:8px 16px;border:none;border-radius:8px;font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;letter-spacing:.5px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;}
+                    .af-btn-primary{background:#004080;color:#fff;}
+                    .af-btn-primary:hover{background:#003060;}
+                    .af-btn-clear{background:#fff;color:#607080;border:2px solid #b0c8e0;}
+                    .af-btn-clear:hover{background:#dc3545;color:#fff;border-color:#dc3545;}
+                    </style>
+                    <div class="af-grp">
+                        <div class="af-lbl">🗺 District</div>
+                        <select id="af_district" class="af-sel" onchange="afCascade('district')"><option value="">All Districts</option></select>
                     </div>
-                    <div style="flex:1;min-width:100px;">
-                        <div style="font-family:'Oswald',sans-serif;font-size:9px;color:#607080;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px;">Chiefdom</div>
-                        <select id="af_chiefdom" onchange="afCascade('chiefdom')" disabled style="width:100%;padding:6px 9px;border:1.5px solid #b0c8e0;border-radius:6px;font-size:12px;font-family:'Oswald',sans-serif;background:#f4f7fa;outline:none;"><option value="">All</option></select>
+                    <div class="af-grp">
+                        <div class="af-lbl">🏛 Chiefdom</div>
+                        <select id="af_chiefdom" class="af-sel" onchange="afCascade('chiefdom')" disabled><option value="">All Chiefdoms</option></select>
                     </div>
-                    <div style="flex:1;min-width:100px;">
-                        <div style="font-family:'Oswald',sans-serif;font-size:9px;color:#607080;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px;">Section</div>
-                        <select id="af_section" onchange="afCascade('section')" disabled style="width:100%;padding:6px 9px;border:1.5px solid #b0c8e0;border-radius:6px;font-size:12px;font-family:'Oswald',sans-serif;background:#f4f7fa;outline:none;"><option value="">All</option></select>
+                    <div class="af-grp">
+                        <div class="af-lbl">📍 Section</div>
+                        <select id="af_section" class="af-sel" onchange="afCascade('section')" disabled><option value="">All Sections</option></select>
                     </div>
-                    <div style="flex:1;min-width:100px;">
-                        <div style="font-family:'Oswald',sans-serif;font-size:9px;color:#607080;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px;">Facility</div>
-                        <select id="af_facility" onchange="afCascade('facility')" disabled style="width:100%;padding:6px 9px;border:1.5px solid #b0c8e0;border-radius:6px;font-size:12px;font-family:'Oswald',sans-serif;background:#f4f7fa;outline:none;"><option value="">All</option></select>
+                    <div class="af-grp">
+                        <div class="af-lbl">🏥 PHU</div>
+                        <select id="af_facility" class="af-sel" onchange="afCascade('facility')" disabled><option value="">All PHUs</option></select>
                     </div>
-                    <div style="flex:1;min-width:100px;">
-                        <div style="font-family:'Oswald',sans-serif;font-size:9px;color:#607080;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px;">Community</div>
-                        <select id="af_community" onchange="afCascade('community')" disabled style="width:100%;padding:6px 9px;border:1.5px solid #b0c8e0;border-radius:6px;font-size:12px;font-family:'Oswald',sans-serif;background:#f4f7fa;outline:none;"><option value="">All</option></select>
+                    <div class="af-grp">
+                        <div class="af-lbl">🏘 Community</div>
+                        <select id="af_community" class="af-sel" onchange="afCascade('community')" disabled><option value="">All Communities</option></select>
                     </div>
-                    <div style="flex:1;min-width:100px;">
-                        <div style="font-family:'Oswald',sans-serif;font-size:9px;color:#607080;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px;">School</div>
-                        <select id="af_school" onchange="runAnalysis()" disabled style="width:100%;padding:6px 9px;border:1.5px solid #b0c8e0;border-radius:6px;font-size:12px;font-family:'Oswald',sans-serif;background:#f4f7fa;outline:none;"><option value="">All</option></select>
+                    <div class="af-grp">
+                        <div class="af-lbl">🏫 School</div>
+                        <select id="af_school" class="af-sel" onchange="runAnalysis()" disabled><option value="">All Schools</option></select>
                     </div>
-                    <button onclick="clearAnalysisFilters()" style="padding:7px 14px;background:#fff;color:#607080;border:1.5px solid #b0c8e0;border-radius:6px;font-family:'Oswald',sans-serif;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;">CLEAR</button>
+                    <div style="display:flex;gap:6px;flex-shrink:0;align-self:flex-end;">
+                        <button class="af-btn af-btn-clear" onclick="clearAnalysisFilters()">✕ Clear</button>
+                    </div>
                 </div>
 
                 <!-- Body: loading / charts -->
@@ -913,22 +1016,19 @@
                         <div style="color:#fff;font-family:'Oswald',sans-serif;font-size:13px;margin-top:10px;letter-spacing:.5px;">Loading video…</div>
                     </div>
                 </div>
-                <!-- Chapter markers (optional — add your own timestamps) -->
-                <div id="videoChapters" style="background:#0a1628;padding:10px 16px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.08);">
-                    <span style="font-family:'Oswald',sans-serif;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.5px;text-transform:uppercase;align-self:center;flex-shrink:0;">CHAPTERS:</span>
-                    <button onclick="seekVideo(0)"     class="vid-chapter">0:00 — Introduction</button>
-                    <button onclick="seekVideo(30)"    class="vid-chapter">0:30 — School Profile</button>
-                    <button onclick="seekVideo(90)"    class="vid-chapter">1:30 — Class Data Entry</button>
-                    <button onclick="seekVideo(180)"   class="vid-chapter">3:00 — ITN Distribution</button>
-                    <button onclick="seekVideo(270)"   class="vid-chapter">4:30 — Summary Dashboard</button>
-                    <button onclick="seekVideo(360)"   class="vid-chapter">6:00 — Finalize & Submit</button>
+                <!-- Info bar: where to put the video -->
+                <div style="background:#0d1f3a;padding:8px 18px;display:flex;align-items:center;gap:10px;border-top:1px solid rgba(255,255,255,.08);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                    <span style="font-family:'Oswald',sans-serif;font-size:11px;color:rgba(255,255,255,.55);letter-spacing:.3px;">
+                        Place <strong style="color:rgba(255,255,255,.8);">video.mp4</strong> in the same folder as <strong style="color:rgba(255,255,255,.8);">index.html</strong> on your server / GitHub Pages / Netlify deployment.
+                    </span>
                 </div>
             </div>
         </div>
 
         <style>
-        .vid-chapter{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);border-radius:20px;padding:4px 12px;font-family:'Oswald',sans-serif;font-size:11px;cursor:pointer;white-space:nowrap;transition:all .15s;letter-spacing:.3px;}
-        .vid-chapter:hover{background:rgba(0,64,128,.6);color:#fff;border-color:#0066cc;}
+        .vid-chapter{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);border-radius:20px;padding:4px 13px;font-family:'Oswald',sans-serif;font-size:11px;cursor:pointer;white-space:nowrap;transition:all .15s;letter-spacing:.3px;}
+        .vid-chapter:hover,.vid-chapter.active{background:rgba(0,100,200,.6);color:#fff;border-color:#0066cc;}
         @keyframes spin{to{transform:rotate(360deg);}}
         </style>
 
@@ -937,27 +1037,76 @@
             const modal = document.getElementById('videoModal');
             const video = document.getElementById('guideVideo');
             if (modal) modal.classList.add('show');
-            if (video) { video.load(); }
+            if (video) video.load();
         };
         window.closeVideoModal = function() {
-            const modal = document.getElementById('videoModal');
             const video = document.getElementById('guideVideo');
             if (video) { video.pause(); }
-            if (modal) modal.classList.remove('show');
+            document.getElementById('videoModal')?.classList.remove('show');
         };
-        window.seekVideo = function(seconds) {
-            const video = document.getElementById('guideVideo');
-            if (video) { video.currentTime = seconds; video.play(); }
+        // Chapter click — highlights the button; no time seek (no timestamps)
+        window.chapterClick = function(btn, section) {
+            document.querySelectorAll('.vid-chapter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         };
-        // Show loading overlay while video buffers
+        // Loading overlay
         document.addEventListener('DOMContentLoaded', function() {
-            const video = document.getElementById('guideVideo');
+            const video   = document.getElementById('guideVideo');
             const overlay = document.getElementById('videoLoadOverlay');
             if (!video || !overlay) return;
             video.addEventListener('waiting', () => overlay.style.opacity = '1');
             video.addEventListener('canplay', () => overlay.style.opacity = '0');
             video.addEventListener('playing', () => overlay.style.opacity = '0');
+            video.addEventListener('error',   () => overlay.style.opacity = '0');
         });
+
+        // ── TARGETS FILE LOADER ─────────────────────────────
+        // CSV format: district, chiefdom, phu, schools_target
+        // (column names are flexible — detected automatically)
+        window._TARGETS = {};   // { "district|chiefdom|phu": number }
+
+        window.loadTargetsFile = function(input) {
+            const file = input.files[0];
+            if (!file) return;
+            if (typeof Papa === 'undefined') { showNotification('PapaParse not loaded.', 'error'); return; }
+            Papa.parse(file, {
+                header: true, skipEmptyLines: true,
+                complete: function(results) {
+                    const rows = results.data;
+                    if (!rows.length) { showNotification('Targets file is empty.', 'error'); return; }
+                    window._TARGETS = {};
+                    // Detect column names (case-insensitive)
+                    const hdr = Object.keys(rows[0]).map(k => k.toLowerCase().trim());
+                    const col = (names) => {
+                        for (const n of names) { const i = hdr.findIndex(h => h.includes(n)); if (i>=0) return Object.keys(rows[0])[i]; }
+                        return null;
+                    };
+                    const dCol  = col(['district','adm1']);
+                    const cCol  = col(['chiefdom','adm2']);
+                    const pCol  = col(['phu','facility','hf','adm3','section']);
+                    const tCol  = col(['target','schools_target','total','count','schools']);
+                    let count = 0;
+                    rows.forEach(r => {
+                        const d = (r[dCol]||'').trim().toLowerCase();
+                        const c = (r[cCol]||'').trim().toLowerCase();
+                        const p = pCol ? (r[pCol]||'').trim().toLowerCase() : '';
+                        const t = parseInt(r[tCol]) || 0;
+                        if (d && t) {
+                            const key = [d, c, p].filter(Boolean).join('|');
+                            window._TARGETS[key] = (window._TARGETS[key]||0) + t;
+                            count++;
+                        }
+                    });
+                    showNotification('Targets loaded: ' + count + ' rows. Reopen ANALYSIS to see.', 'success');
+                    input.value = '';
+                    // If analysis modal is open, refresh it
+                    if (document.getElementById('analysisModal')?.classList.contains('show')) {
+                        if (typeof window._sheetRows !== 'undefined') window.runAnalysis(window._sheetRows);
+                    }
+                },
+                error: () => showNotification('Could not read targets file.', 'error')
+            });
+        };
         </script>
 
         <div class="notification" id="notification"><span id="notificationText"></span></div>
