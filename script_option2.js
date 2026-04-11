@@ -1,129 +1,3 @@
-// ============================================
-// PWA INSTALL BANNER
-// ============================================
-
-window.pwaDoInstall = async function() {
-    if (!deferredPrompt) {
-        // Prompt not ready yet — do nothing, wait for beforeinstallprompt
-        console.log('[PWA] Prompt not available yet');
-        return;
-    }
-
-    const btn    = document.getElementById('installBtn');
-    const pwaBtn = document.getElementById('pwaInstallBtn');
-
-    // Show installing state immediately on both buttons
-    [btn, pwaBtn].forEach(b => {
-        if (b) { b.textContent = 'Installing…'; b.disabled = true; b.style.background = '#1a7a2e'; }
-    });
-
-    try {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        deferredPrompt = null;
-
-        if (outcome === 'accepted') {
-            [btn, pwaBtn].forEach(b => {
-                if (b) { b.textContent = '✓ Installed!'; b.style.background = '#28a745'; b.disabled = false; }
-            });
-            showNotification('✅ SBD 2026 installed! Find it on your home screen.', 'success');
-            setTimeout(() => {
-                const banner = document.getElementById('installBanner');
-                if (banner) banner.style.display = 'none';
-                _pwaBannerHide();
-            }, 3000);
-        } else {
-            // User cancelled — reset buttons
-            [btn, pwaBtn].forEach(b => {
-                if (b) { b.textContent = 'INSTALL'; b.disabled = false; b.style.background = '#28a745'; }
-            });
-        }
-    } catch(e) {
-        console.error('[PWA]', e);
-        [btn, pwaBtn].forEach(b => {
-            if (b) { b.textContent = 'INSTALL'; b.disabled = false; }
-        });
-    }
-};
-window.pwaCloseBanner = function() {
-    const b = document.getElementById('pwaInstallBanner');
-    if (b) b.style.bottom = '-120px';
-};
-
-function _pwaBannerShow() {
-    const b = document.getElementById('pwaInstallBanner');
-    if (b) setTimeout(() => { b.style.bottom = '16px'; }, 80);
-}
-function _pwaSuccess() {
-    showNotification('App installed! Open from home screen.', 'success');
-    const banner = document.getElementById('installBanner');
-    if (banner) banner.style.display = 'none';
-    const pb = document.getElementById('pwaInstallBanner');
-    if (pb) pb.style.bottom = '-120px';
-}
-function _pwaInjectBanner() {
-    if (document.getElementById('pwaInstallBanner')) return;
-    const b = document.createElement('div');
-    b.id = 'pwaInstallBanner';
-    b.setAttribute('style', 'position:fixed;bottom:-120px;left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:520px;background:linear-gradient(135deg,#002952,#004080);border-radius:14px;padding:13px 14px;box-shadow:0 -2px 30px rgba(0,0,0,.4);border:1.5px solid rgba(200,153,26,.45);z-index:2147483647;transition:bottom .4s ease;box-sizing:border-box;pointer-events:all;');
-    b.innerHTML =
-        '<div style="display:flex;align-items:center;gap:11px;pointer-events:all;">' +
-          '<img src="./icons/icon-192.png" width="40" height="40" style="border-radius:9px;flex-shrink:0;" onerror="this.style.display=\x27none\x27">' +
-          '<div style="flex:1;">' +
-            '<div style="font-family:Oswald,sans-serif;font-size:13px;font-weight:700;color:#fff;">SBD 2026 — ITN Survey</div>' +
-            '<div style="font-size:11px;color:rgba(255,255,255,.72);">Install for offline use &amp; quick access</div>' +
-          '</div>' +
-          '<button id="pwaInstallBtn" onclick="window.pwaDoInstall()" style="background:#c8991a;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-family:Oswald,sans-serif;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;pointer-events:all;touch-action:manipulation;">INSTALL</button>' +
-          '<button onclick="window.pwaCloseBanner()" style="background:rgba(255,255,255,.16);color:#fff;border:none;border-radius:6px;min-width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;pointer-events:all;touch-action:manipulation;font-size:16px;">×</button>' +
-        '</div>';
-    document.body.appendChild(b);
-}
-
-window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-    // Turn install button green — ready
-    const btn = document.getElementById('installBtn');
-    if (btn) {
-        btn.style.background = '#28a745';
-        btn.textContent = 'INSTALL';
-        btn.style.display = 'inline-flex';
-    }
-    // Auto-show floating banner
-    _pwaInjectBanner();
-    _pwaBannerShow();
-    console.log('[PWA] Install prompt ready');
-});
-
-window.addEventListener('appinstalled', () => {
-    deferredPrompt = null;
-    _pwaSuccess();
-    const b = document.getElementById('installBanner');
-    if (b) b.style.display = 'none';
-    console.log('[PWA] App installed');
-});
-
-function setupInstallButton() {
-    const btn = document.getElementById('installBtn');
-    if (!btn) return;
-    // Already installed — hide banner
-    if (window.matchMedia('(display-mode: standalone)').matches ||
-        window.navigator.standalone === true) {
-        const b = document.getElementById('installBanner');
-        if (b) b.style.display = 'none';
-        return;
-    }
-    btn.style.display = 'inline-flex';
-    btn.setAttribute('onclick', 'window.pwaInstallClick()');
-}
-window.pwaInstallClick = window.pwaDoInstall;
-
-function showBanner()        {}
-function hideBanner()        { window.pwaCloseBanner(); }
-function showInstallSuccess(){ _pwaSuccess(); }
-function syncNavInstallBtn() {}
-function injectInstallBanner(){ _pwaInjectBanner(); }    
-
 const CONFIG = {
     SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbymRy-M5v0fVLWUjw4IXYhd1oIR2ZvnP_Dzr_iGR-Th0cMIpmE2ntGeujWYH7-C6NHIzA/exec',
     SHEET_URL:  'https://docs.google.com/spreadsheets/d/1cXlYiTMzcRP1BCj9mt1JXoK_pjgWbRtDEEQUPMg2HPs/edit?usp=sharing',
@@ -137,7 +11,7 @@ const CONFIG = {
 // ============================================
 const state = {
     currentSection: 1,
-    totalSections:  5,
+    totalSections:  7,
     isOnline:       navigator.onLine,
     pendingSubmissions: [],
     drafts:         [],
@@ -162,7 +36,7 @@ let deferredPrompt    = null;
 function cacheImagesForOffline() {
     const imagesToCache = [
         'ICF-SL.jpg','logo_mohs.png','logo_nmcp.png','logo_pmi.png',
-        'infographics.png','favicon.svg','icon-192.svg','video.mp4'
+        'infographics.png','favicon.svg','icon-192.svg'
     ];
     if ('caches' in window) {
         caches.open('itn-images-v1').then(cache => {
@@ -223,7 +97,7 @@ window.pwaDoInstall = async function() {
         const { outcome } = await deferredPrompt.userChoice;
         deferredPrompt = null;
         if (outcome === 'accepted') {
-            _pwaSuccess();    
+            _pwaSuccess();
         } else {
             _pwaBannerHide();
             if (btn) { btn.textContent = 'INSTALL'; btn.disabled = false; }
@@ -234,11 +108,6 @@ window.pwaDoInstall = async function() {
     }
 };
 window.pwaCloseBanner = function() { _pwaBannerHide(); };
-function _pwaBannerHide() {
-    const b = document.getElementById('pwaInstallBanner');
-    if (b) b.style.bottom = '-120px';
-}
-
 function _pwaBannerShow() {
     const b = document.getElementById('pwaInstallBanner');
     if (b) setTimeout(() => { b.style.bottom = '16px'; }, 80);
@@ -504,11 +373,22 @@ function injectSummaryModal() {
               <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
             </svg>SCHOOL COVERAGE SUMMARY
           </span>
-          <button class="modal-close" onclick="closeSummaryModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
+          <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+            <button id="summaryRefreshBtn" onclick="window.refreshSummaryFromServer()"
+              style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:7px;padding:6px 13px;font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.5px;display:flex;align-items:center;gap:6px;transition:all .2s;"
+              onmouseover="this.style.background='rgba(255,255,255,.25)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
+              <svg id="summaryRefreshIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+                <polyline points="1 4 1 10 7 10"/>
+                <path d="M3.51 15a9 9 0 1 0 .49-4.95"/>
+              </svg>
+              REFRESH
+            </button>
+            <button class="modal-close" onclick="closeSummaryModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
         </div>
         <div class="modal-body" id="summaryModalBody"></div>
       </div>
@@ -687,6 +567,7 @@ function loadLocationData() {
                 const _seenKeys  = new Set();    // full 5-part keys seen so far
                 const _dupRows   = [];           // duplicate rows found
                 window.CSV_DUPLICATES = [];      // expose for ai_agent.js Targets tab
+                window.CSV_SCHOOL_DATA = {};     // key → {enrollment, emis, status}
 
                 results.data.forEach((row, rowIdx) => {
                     const d   = csvCol(row, 'District',    'adm1');
@@ -700,7 +581,6 @@ function loadLocationData() {
                     const fullKey = [d,c,fac,com,sch].map(v=>v.trim().toLowerCase()).join('|');
 
                     if (_seenKeys.has(fullKey)) {
-                        // Duplicate — record it but do NOT add to location data again
                         _dupRows.push({ row: rowIdx + 2, district: d, chiefdom: c, phu: fac, community: com, school: sch, key: fullKey });
                         return;
                     }
@@ -711,6 +591,23 @@ function loadLocationData() {
                     if (!ALL_LOCATION_DATA[d][c][fac]) ALL_LOCATION_DATA[d][c][fac]={};
                     if (!ALL_LOCATION_DATA[d][c][fac][com]) ALL_LOCATION_DATA[d][c][fac][com]=[];
                     ALL_LOCATION_DATA[d][c][fac][com].push(sch);
+
+                    // Store school metadata for auto-fill
+                    // Try all common spellings for each column
+                    const _enr = csvCol(row,
+                        'School enrollment', 'School Enrollment', 'school_enrollment',
+                        'enrollment', 'Enrollment', 'ENROLLMENT') || '';
+                    const _emis = csvCol(row,
+                        'EMIS Number', 'EMIS number', 'emis_number',
+                        'emis', 'EMIS', 'Emis Number') || '';
+                    const _status = csvCol(row,
+                        'School Status', 'school_status', 'status',
+                        'Status', 'STATUS', 'School status') || '';
+                    window.CSV_SCHOOL_DATA[fullKey] = {
+                        enrollment: _enr,
+                        emis:       _emis,
+                        status:     _status
+                    };
                     loaded++;
                 });
 
@@ -731,6 +628,9 @@ function loadLocationData() {
                 window.ALL_LOCATION_DATA = ALL_LOCATION_DATA;   // ai_agent.js reads window.ALL_LOCATION_DATA
                 window.LOCATION_DATA     = ALL_LOCATION_DATA;
 
+                // Debug — log first few CSV_SCHOOL_DATA entries
+                const _sampleKeys = Object.keys(window.CSV_SCHOOL_DATA).slice(0,3);
+                _sampleKeys.forEach(k => console.log('[CSV_SCHOOL_DATA]', k, '->', JSON.stringify(window.CSV_SCHOOL_DATA[k])));
                 const dCount = Object.keys(ALL_LOCATION_DATA).length;
                 console.log(`[CSV] ${loaded} rows loaded → ${dCount} district(s). Skipped: ${skipped}`);
                 if (dCount === 0) {
@@ -925,6 +825,43 @@ function setupSchoolSubmissionCheck() {
     schoolSel.addEventListener('change', async function() {
         const key = currentSchoolKey();
 
+        // ── Show cascading block + common fields + nav ──────────
+        const mb  = document.getElementById('manualEntryBlock');
+        const nav = document.getElementById('sectionBNav');
+        if (mb)  mb.style.display  = 'block';
+        if (key && nav) nav.style.display = 'flex';
+
+        // ── Auto-populate from CSV when school selected ──────────
+        const meta = window.CSV_SCHOOL_DATA && window.CSV_SCHOOL_DATA[key];
+        const enrGrp  = document.getElementById('enrollment-group');
+        const emisGrp = document.getElementById('emis-group');
+        const stGrp   = document.getElementById('status-group');
+        const enrEl   = document.getElementById('school_enrollment');
+        const emisEl  = document.getElementById('emis_number');
+        const stEl    = document.getElementById('school_status');
+
+        if (meta) {
+            // Enrollment
+            if (meta.enrollment && enrEl && enrGrp) {
+                enrEl.value = meta.enrollment;
+                enrGrp.style.display = 'block';
+            } else if (enrGrp) enrGrp.style.display = 'none';
+
+            // EMIS — always show so user can fill if CSV has no value
+            if (emisEl) emisEl.value = meta.emis || '';
+            if (emisGrp) emisGrp.style.display = 'block';
+
+            // Status — always show if available (Old or New from CSV)
+            if (meta.status && stEl && stGrp) {
+                stEl.value = meta.status;
+                stGrp.style.display = 'block';
+            } else if (stGrp) stGrp.style.display = 'none';
+        } else {
+            // School not in CSV — hide and clear all
+            [enrEl, emisEl, stEl].forEach(function(el) { if(el) el.value = ''; });
+            [enrGrp, emisGrp, stGrp].forEach(function(g) { if(g) g.style.display = 'none'; });
+        }
+
         // Reset state when school changes
         _dupCheck.key       = key;
         _dupCheck.duplicate = false;
@@ -980,7 +917,7 @@ function setupSchoolSubmissionCheck() {
 }
 
 function injectSubmittedBanner() {
-    const section2 = document.querySelector('.form-section[data-section="2"]');
+    const section2 = document.querySelector('.form-section[data-section="3"]');
     if (!section2) return;
     const banner = document.createElement('div');
     banner.id = 'schoolSubmittedBanner';
@@ -1034,6 +971,28 @@ function currentSchoolKey() {
         return [district,chiefdom,facility,community,school]
             .map(s=>s.trim().toLowerCase()).join('|');
     } catch (e) { return null; }
+}
+
+function isNewSchool(district, chiefdom, facility, community, school) {
+    try {
+        const key = [district,chiefdom,facility,community,school]
+            .map(s=>(s||'').toString().trim().toLowerCase()).join('|');
+        const d = window.ALL_LOCATION_DATA;
+        if (!d) return false;
+        // If key exists in CSV_SCHOOL_DATA it's an existing school
+        if (window.CSV_SCHOOL_DATA && window.CSV_SCHOOL_DATA[key]) return false;
+        // Also check ALL_LOCATION_DATA structure
+        const dKey = Object.keys(d).find(k=>k.toLowerCase()===district.toLowerCase());
+        if (!dKey) return true;
+        const cKey = Object.keys(d[dKey]).find(k=>k.toLowerCase()===chiefdom.toLowerCase());
+        if (!cKey) return true;
+        const fKey = Object.keys(d[dKey][cKey]).find(k=>k.toLowerCase()===facility.toLowerCase());
+        if (!fKey) return true;
+        const comKey = Object.keys(d[dKey][cKey][fKey]).find(k=>k.toLowerCase()===community.toLowerCase());
+        if (!comKey) return true;
+        const schools = d[dKey][cKey][fKey][comKey];
+        return !schools.some(s=>s.toLowerCase()===school.toLowerCase());
+    } catch(e) { return false; }
 }
 
 function makeSchoolKey(district, chiefdom, facility, community, school) {
@@ -1093,6 +1052,12 @@ function updateSummaryBadge() {
 window.openSummaryModal = function() {
     const modal = document.getElementById('summaryModal');
     const body  = document.getElementById('summaryModalBody');
+    if (modal) modal.classList.add('show');
+    // Always fetch from server — show loading state
+    if (body) body.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#607080;"><svg viewBox="0 0 24 24" fill="none" stroke="#004080" stroke-width="2" width="36" height="36" style="animation:spin .8s linear infinite;display:block;margin:0 auto 14px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg><div style="font-family:Oswald,sans-serif;font-size:13px;font-weight:700;color:#004080;letter-spacing:.5px;">FETCHING LATEST DATA FROM SERVER...</div></div>';
+    window.refreshSummaryFromServer();
+    return;
+    // --- local render below is kept as fallback reference but not called ---
     const all   = getAllAssignedSchools();
     const total = all.length;
     const submitted = all.filter(s => isSchoolSubmitted(s.key));
@@ -1189,7 +1154,7 @@ window.openSummaryModal = function() {
     });
 
     if (!schoolRows) {
-        schoolRows = `<tr><td colspan="9" style="padding:32px;text-align:center;color:#aaa;font-style:italic;">No schools loaded — ensure cascading_data1.csv is present.</td></tr>`;
+        schoolRows = `<tr><td colspan="9" style="padding:32px;text-align:center;color:#aaa;font-style:italic;">No schools loaded — ensure cascading_data.csv is present.</td></tr>`;
     }
 
     body.innerHTML = `
@@ -1247,6 +1212,61 @@ window.openSummaryModal = function() {
       </div>`;
 
     if (modal) modal.classList.add('show');
+};
+
+window.refreshSummaryFromServer = function() {
+    if (!state.isOnline) {
+        const body = document.getElementById('summaryModalBody');
+        if (body) body.innerHTML = '<div style="text-align:center;padding:40px 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2" width="40" height="40" style="display:block;margin:0 auto 14px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div style="font-family:Oswald,sans-serif;font-size:14px;font-weight:700;color:#dc3545;">YOU ARE OFFLINE</div><div style="font-size:12px;color:#607080;margin-top:8px;">Connect to the internet to view the latest summary.</div></div>';
+        return;
+    }
+
+    // Spin the icon
+    const icon = document.getElementById('summaryRefreshIcon');
+    const btn  = document.getElementById('summaryRefreshBtn');
+    if (icon) icon.style.animation = 'spin 0.8s linear infinite';
+    if (btn)  btn.disabled = true;
+
+    fetch(CONFIG.SCRIPT_URL + '?action=getAllSubmissions')
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+        if (res.status === 'ok' && Array.isArray(res.submissions)) {
+            // Merge server submissions into state.submittedSchools
+            res.submissions.forEach(function(sub) {
+                const key = makeSchoolKey(
+                    sub.district, sub.chiefdom, sub.facility,
+                    sub.community, sub.school_name
+                );
+                if (key && !isSchoolSubmitted(key)) {
+                    state.submittedSchools.push({
+                        key:         key,
+                        district:    sub.district    || '',
+                        chiefdom:    sub.chiefdom    || '',
+                        facility:    sub.facility    || '',
+                        community:   sub.community   || '',
+                        school_name: sub.school_name || '',
+                        timestamp:   sub.timestamp   || '',
+                        data:        sub
+                    });
+                }
+            });
+            saveState();
+            // Re-render summary
+            window.openSummaryModal();
+            showNotification('Summary updated — ' + res.submissions.length + ' records from server.', 'success');
+        } else {
+            showNotification('Could not fetch data from server.', 'error');
+        }
+    })
+    .catch(function() {
+        const body = document.getElementById('summaryModalBody');
+        if (body) body.innerHTML = '<div style="text-align:center;padding:40px 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2" width="40" height="40" style="display:block;margin:0 auto 14px;"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg><div style="font-family:Oswald,sans-serif;font-size:14px;font-weight:700;color:#dc3545;">SERVER UNREACHABLE</div><div style="font-size:12px;color:#607080;margin-top:8px;">Could not connect to the ICF-SL server.<br>Check your internet connection and try again.</div><button onclick="window.refreshSummaryFromServer()" style="margin-top:16px;padding:10px 24px;background:#004080;color:#fff;border:none;border-radius:8px;font-family:Oswald,sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px;">RETRY</button></div>';
+        showNotification('Server unreachable. Check your connection.', 'error');
+    })
+    .finally(function() {
+        if (icon) icon.style.animation = '';
+        if (btn)  btn.disabled = false;
+    });
 };
 
 window.closeSummaryModal = function() {
@@ -1427,7 +1447,12 @@ window.loadSchoolIntoForm = function(key) {
 // NAVIGATION
 // ============================================
 window.nextSection = function() {
-    if (state.currentSection === 1) { moveToNextSection(); return; }
+    if (state.currentSection === 1) {
+        moveToNextSection();
+        // Show entry method modal when arriving at Section B
+        setTimeout(() => { window.ensureSectionBVisible && window.ensureSectionBVisible(); }, 150);
+        return;
+    }
     if (validateCurrentSection()) moveToNextSection();
 };
 
@@ -1438,6 +1463,10 @@ window.previousSection = function() {
         document.querySelector('.form-section[data-section="'+state.currentSection+'"]')?.classList.add('active');
         updateProgress();
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Restore Section B content when going back
+        if (state.currentSection === 2 || state.currentSection === 3) {
+            setTimeout(function() { window.ensureSectionBVisible && window.ensureSectionBVisible(); }, 150);
+        }
     }
 };
 
@@ -1448,18 +1477,56 @@ function moveToNextSection() {
         document.querySelector('.form-section[data-section="'+state.currentSection+'"]')?.classList.add('active');
         updateProgress();
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        if (state.currentSection === 4) calculateAll();
+        if (state.currentSection === 3) {
+            setTimeout(function() { window.ensureSectionBVisible && window.ensureSectionBVisible(); }, 100);
+        }
+        if (state.currentSection === 5) calculateAll();
     }
 }
 
 function validateCurrentSection() {
+    // Extra validation for section 2 head teacher phone
+    if (state.currentSection === 4) {
+        const phoneEl = document.getElementById('head_teacher_phone');
+        if (phoneEl) {
+            const phone = phoneEl.value.trim();
+            const errorEl = document.getElementById('error_head_teacher_phone');
+            if (!phone || !/^[0-9]{9}$/.test(phone)) {
+                if (errorEl) errorEl.textContent = phone ? 'Enter exactly 9 digits' : 'Head teacher phone is required';
+                if (phoneEl) phoneEl.style.borderColor = '#dc3545';
+                return false;
+            }
+            // Local uniqueness check
+            const currentSchool = document.getElementById('school_name')?.value || '';
+            const alreadyUsed = (state.submittedSchools || []).find(s => {
+                const d = s.data || s;
+                return d.head_teacher_phone === phone && (d.school_name || '') !== currentSchool;
+            });
+            if (alreadyUsed) {
+                const usedIn = (alreadyUsed.data || alreadyUsed).school_name || 'another school';
+                if (errorEl) errorEl.textContent = '⚠ Phone already used at: ' + usedIn;
+                if (phoneEl) phoneEl.style.borderColor = '#dc3545';
+                return false;
+            }
+            if (errorEl) errorEl.textContent = '';
+            phoneEl.style.borderColor = '#28a745';
+        }
+    }
     const section = document.querySelector('.form-section[data-section="'+state.currentSection+'"]');
     if (!section) return true;
     if (state.currentSection === 1) return true;
 
     if (state.currentSection === 2) {
+        // Method choice section — valid as long as a method is chosen
+        if (!window._entryMethod) {
+            showNotification('Please choose an identification method first.', 'error');
+            return false;
+        }
+        return true;
+    }
+
+    if (state.currentSection === 3) {
         const key = currentSchoolKey();
-        // Use cached result from async check — or re-check local synchronously
         if (key && (_dupCheck.duplicate || isSchoolSubmitted(key))) {
             const src = _dupCheck.source === 'online' ? ' (confirmed on ICF-SL Server)' :
                         _dupCheck.source === 'pending' ? ' (in offline queue)' :
@@ -1473,6 +1540,14 @@ function validateCurrentSection() {
     section.querySelectorAll('input[required], select[required]').forEach(field => {
         if (field.type === 'hidden') return;
         if (field.disabled) return;   // skip disabled fields (e.g. section_loc)
+        // Skip fields inside hidden containers (display:none)
+        let el = field;
+        let parentHidden = false;
+        while (el && el !== section) {
+            if (el.style && el.style.display === 'none') { parentHidden = true; break; }
+            el = el.parentElement;
+        }
+        if (parentHidden) return;
         if (!field.value || field.value.trim() === '') {
             isValid = false; field.classList.add('error');
             document.getElementById('error_'+field.id)?.classList.add('show');
@@ -1484,16 +1559,7 @@ function validateCurrentSection() {
     });
 
     if (state.currentSection === 3) {
-        const pbo = document.getElementById('itn_type_pbo')?.checked||false;
-        const ig2 = document.getElementById('itn_type_ig2')?.checked||false;
-        if (!pbo && !ig2) {
-            isValid = false;
-            document.getElementById('error_itn_type')?.classList.add('show');
-            showNotification('Please select at least one ITN type.', 'error');
-        } else {
-            document.getElementById('error_itn_type')?.classList.remove('show');
-        }
-        if ((pbo || ig2) && !validateITNQuantities()) isValid = false;
+        // ITN type is Dual-AI — no quantity split validation needed
         document.querySelectorAll('.itn-field').forEach(field => {
             const maxField = document.getElementById(field.getAttribute('data-max-field'));
             if (maxField && (parseInt(field.value)||0) > (parseInt(maxField.value)||0)) {
@@ -1595,7 +1661,14 @@ function validateITNQuantities() {
 function setupPhoneValidation() {
     document.querySelectorAll('.phone-field').forEach(input => {
         input.addEventListener('input', function() {
+            // Strip non-digits and limit to 9
             this.value = this.value.replace(/\D/g,'').slice(0,9);
+            // Clear error while typing — only show red after blur
+            this.classList.remove('error');
+            const errEl = document.getElementById('error_'+this.id);
+            if (errEl) errEl.classList.remove('show');
+        });
+        input.addEventListener('blur', function() {
             validatePhoneField(this);
         });
     });
@@ -1784,8 +1857,9 @@ function collectDraftData() {
     const data = {
         _savedAt:        new Date().toISOString(),
         _currentSection: state.currentSection,
-        itn_type_pbo:    document.getElementById('itn_type_pbo')?.checked || false,
-        itn_type_ig2:    document.getElementById('itn_type_ig2')?.checked || false,
+        itn_type:        'Dual-AI',
+        itn_type_pbo:    false,
+        itn_type_ig2:    false,
     };
     for (const [k, v] of formData.entries()) data[k] = v;
     return data;
@@ -1844,11 +1918,7 @@ function _applyDraft(draft) {
             const el = document.getElementById(k);
             if (el && el.type !== 'hidden') el.value = v;
         });
-        const pbo = document.getElementById('itn_type_pbo');
-        const ig2 = document.getElementById('itn_type_ig2');
-        if (pbo) pbo.checked = !!draft.itn_type_pbo;
-        if (ig2) ig2.checked = !!draft.itn_type_ig2;
-        toggleITNTypeQuantity();
+        // ITN type is Dual-AI — no checkbox restore needed
 
         const sec = parseInt(draft._currentSection) || 1;
         document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
@@ -1887,7 +1957,7 @@ function updateDraftIndicator() {}
 // ============================================
 window.finalizeForm = function() {
     // Validate all sections
-    for(let s = 2; s <= state.totalSections; s++) {
+    for(let s = 3; s <= state.totalSections; s++) {
         state.currentSection = s;
         if (!validateCurrentSection()) {
             document.querySelectorAll('.form-section').forEach(sec => sec.classList.remove('active'));
@@ -1896,22 +1966,18 @@ window.finalizeForm = function() {
             return;
         }
     }
-    const pbo = document.getElementById('itn_type_pbo')?.checked || false;
-    const ig2 = document.getElementById('itn_type_ig2')?.checked || false;
-    if (!pbo && !ig2) {
-        showNotification('Please select at least one ITN type.', 'error');
-        state.currentSection = 3;
-        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-        document.querySelector('.form-section[data-section="3"]')?.classList.add('active');
-        updateProgress(); return;
+    // ITN type is always Dual-AI — no check needed
+    // ITN quantity split validation removed — Dual-AI only
+    // ── Track new schools ─────────────────────────────────────
+    const _district   = document.getElementById('district')?.value   || '';
+    const _chiefdom   = document.getElementById('chiefdom')?.value   || '';
+    const _facility   = document.getElementById('facility')?.value   || '';
+    const _community  = document.getElementById('community')?.value  || '';
+    const _schoolName = document.getElementById('school_name')?.value|| '';
+    if (_schoolName && isNewSchool(_district, _chiefdom, _facility, _community, _schoolName)) {
+        saveNewSchool(_district, _chiefdom, _facility, _community, _schoolName);
     }
-    if (!validateITNQuantities()) {
-        showNotification('ITN type quantities must equal total ITNs received.', 'error');
-        state.currentSection = 3;
-        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-        document.querySelector('.form-section[data-section="3"]')?.classList.add('active');
-        updateProgress(); return;
-    }
+
     // Capture signatures from canvas if hidden inputs empty (mobile fix)
     for (const [n, label] of [[1,'Health Staff'],[2,'Teacher']]) {
         const hidden = document.getElementById('team'+n+'_signature');
@@ -1947,7 +2013,7 @@ window.doSubmit = async function() {
     const submitBtn = document.getElementById('submitBtn');
 
     // Run full validation before submitting
-    for(let s = 2; s <= state.totalSections; s++) {
+    for(let s = 3; s <= state.totalSections; s++) {
         const savedSection = state.currentSection;
         state.currentSection = s;
         const valid = validateCurrentSection();
@@ -1961,22 +2027,37 @@ window.doSubmit = async function() {
             return;
         }
     }
-    const pbo = document.getElementById('itn_type_pbo')?.checked || false;
-    const ig2 = document.getElementById('itn_type_ig2')?.checked || false;
-    if (!pbo && !ig2) {
-        showNotification('Please select at least one ITN type.', 'error');
-        state.currentSection = 3;
-        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-        document.querySelector('.form-section[data-section="3"]')?.classList.add('active');
-        updateProgress(); return;
+    // ITN type is always Dual-AI — no check needed
+    // ITN quantity split validation removed — Dual-AI only
+    // ── Head teacher phone unique check online ──────────────────
+    const htPhone = document.getElementById('head_teacher_phone')?.value || '';
+    if (htPhone && state.isOnline) {
+        try {
+            const dupRes = await Promise.race([
+                fetch(CONFIG.SCRIPT_URL + '?action=checkDuplicate&field=head_teacher_phone&value=' + encodeURIComponent(htPhone) + '&school=' + encodeURIComponent(document.getElementById('school_name')?.value || '')),
+                new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 4000))
+            ]);
+            if (dupRes.ok) {
+                const dupData = await dupRes.json();
+                if (dupData.duplicate) {
+                    showNotification('⛔ Duplicate phone number: ' + htPhone + ' already used at ' + (dupData.school || 'another school'), 'error');
+                    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> SUBMIT'; }
+                    return;
+                }
+            }
+        } catch(e) { /* fail open */ }
     }
-    if (!validateITNQuantities()) {
-        showNotification('ITN type quantities must equal total ITNs received.', 'error');
-        state.currentSection = 3;
-        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-        document.querySelector('.form-section[data-section="3"]')?.classList.add('active');
-        updateProgress(); return;
+
+    // ── Track new schools ─────────────────────────────────────
+    const _district   = document.getElementById('district')?.value   || '';
+    const _chiefdom   = document.getElementById('chiefdom')?.value   || '';
+    const _facility   = document.getElementById('facility')?.value   || '';
+    const _community  = document.getElementById('community')?.value  || '';
+    const _schoolName = document.getElementById('school_name')?.value|| '';
+    if (_schoolName && isNewSchool(_district, _chiefdom, _facility, _community, _schoolName)) {
+        saveNewSchool(_district, _chiefdom, _facility, _community, _schoolName);
     }
+
     // Capture signatures from canvas if hidden inputs empty (mobile fix)
     for (const [n, label] of [[1,'Health Staff'],[2,'Teacher']]) {
         const hidden = document.getElementById('team'+n+'_signature');
@@ -2000,9 +2081,30 @@ window.doSubmit = async function() {
     // Collect form data
     const form = document.getElementById('dataForm');
     if (!form) return;
+
+    // ── Head teacher phone — 9 digit unique check ───────────
+    if (window.validateHeadTeacherPhone && !window.validateHeadTeacherPhone()) {
+        const inp = document.getElementById('head_teacher_phone');
+        if (inp) { inp.scrollIntoView({ behavior:'smooth', block:'center' }); }
+        if (submitBtn) { submitBtn.disabled=false; submitBtn.innerHTML='<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> SUBMIT'; }
+        return;
+    }
+
+    // ── Handle new school name override ─────────────────────
+    const newSchoolName = document.getElementById('newSchoolName')?.value?.trim();
+    if (_isNewSchool && newSchoolName) {
+        // override school_name for submission
+    }
+
     const formData = new FormData(form);
     const data = { timestamp: new Date().toISOString(), submitted_by: state.currentUser || '' };
     for (const [k, v] of formData.entries()) data[k] = v;
+
+    // If new school, mark it
+    if (_isNewSchool && newSchoolName) {
+        data.school_name = newSchoolName;
+        data.is_new_school = 'yes';
+    }
     const pboEl = document.getElementById('itn_type_pbo');
     const ig2El = document.getElementById('itn_type_ig2');
     data.itn_type_pbo = pboEl && pboEl.checked ? 'Yes' : 'No';
@@ -2076,6 +2178,17 @@ window.doSubmit = async function() {
                 body: JSON.stringify(data)
             });
             markSchoolSubmitted(data);
+            // Lock form — one submission per session
+            setTimeout(() => {
+                const fw = document.getElementById('formCardWrap');
+                if (fw) fw.style.display = 'none';
+                const dataEntryBtn = document.querySelector('[onclick*="dataentry"]');
+                if (dataEntryBtn) {
+                    dataEntryBtn.disabled = true;
+                    dataEntryBtn.style.opacity = '0.4';
+                    dataEntryBtn.title = 'Already submitted';
+                }
+            }, 500);
             clearDraft();
             saveToStorage(); updateCounts(); updateSummaryBadge();
             showThankYouModal(data, false);
@@ -2118,11 +2231,14 @@ function showThankYouModal(data, offline) {
                 </div>
                 <div style="padding:22px 24px;background:#fff;">
                     <div id="tySummary" style="background:#f0f9f3;border:2px solid #b2dfcc;border-radius:10px;padding:14px;margin-bottom:18px;font-size:13px;"></div>
-                    <button onclick="window.doAnotherSubmission()"
-                        style="width:100%;padding:13px;background:#004080;color:#fff;border:none;border-radius:9px;font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;letter-spacing:.8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;touch-action:manipulation;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" width="17" height="17"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        SUBMIT ANOTHER SCHOOL
-                    </button>
+                    <div style="text-align:center;padding:10px 0 4px;">
+                        <div style="font-family:'Oswald',sans-serif;font-size:15px;font-weight:700;color:#28a745;letter-spacing:.4px;">✅ SUBMISSION COMPLETE</div>
+                        <div style="font-size:12px;color:#607080;margin-top:6px;" id="tySubtitle2"></div>
+                        <button onclick="window.startNewEntry()"
+                            style="margin-top:16px;width:100%;padding:13px;background:#004080;color:#fff;border:none;border-radius:10px;font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;letter-spacing:.6px;cursor:pointer;text-transform:uppercase;">
+                            ➕ START NEW ENTRY
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>`);
@@ -2165,12 +2281,18 @@ function showThankYouModal(data, offline) {
     document.getElementById('thankYouModal').classList.add('show');
 }
 
-window.doAnotherSubmission = function() {
+window.startNewEntry = function() {
     document.getElementById('thankYouModal')?.classList.remove('show');
     resetForm();
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    showNotification('Form cleared — ready for next school.', 'info');
+    clearDraft(); // clear auto-saved draft so old phone doesn't restore
+    window._entryMethod = null;
+    // Scroll back to top of form
+    const wrap = document.getElementById('formCardWrap');
+    if (wrap) {
+        wrap.style.display = 'block';
+        setTimeout(() => wrap.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+    showNotification('Form cleared — ready for next school.', 'success');
 };
 
 function markSchoolSubmitted(data) {
@@ -2207,28 +2329,62 @@ function resetForm() {
     setTimeout(()=>initAllSignaturePads(),100);
 }
 
+
+// ════════════════════════════════════════════════════
+// NEW SCHOOL — Not in CSV target list
+// ════════════════════════════════════════════════════
+let _isNewSchool = false;
+
+window.toggleNewSchoolInput = function() {
+    const wrap = document.getElementById('newSchoolInputWrap');
+    const schoolSel = document.getElementById('school_name');
+    if (!wrap) return;
+    _isNewSchool = !_isNewSchool;
+    wrap.style.display = _isNewSchool ? 'block' : 'none';
+
+    const btn = document.getElementById('addNewSchoolBtn');
+    if (btn) btn.textContent = _isNewSchool ? '✕ CANCEL NEW SCHOOL' : '➕ ADD NEW SCHOOL (not in list)';
+
+    if (_isNewSchool) {
+        // Disable the select
+        if (schoolSel) { schoolSel.disabled = true; schoolSel.value = ''; }
+        setTimeout(() => document.getElementById('newSchoolName')?.focus(), 100);
+    } else {
+        if (schoolSel) schoolSel.disabled = false;
+        document.getElementById('newSchoolName').value = '';
+        // Remove new-school hidden field
+        const hf = document.getElementById('is_new_school');
+        if (hf) hf.value = '';
+    }
+};
+
+window.updateNewSchoolName = function(val) {
+    // Keep a hidden field for new school flag
+    let hf = document.getElementById('is_new_school');
+    if (!hf) {
+        hf = document.createElement('input');
+        hf.type = 'hidden'; hf.name = 'is_new_school'; hf.id = 'is_new_school';
+        document.getElementById('dataForm')?.appendChild(hf);
+    }
+    hf.value = val ? 'yes' : '';
+    // Also set school_name value in form via hidden field
+    let snHf = document.getElementById('school_name_new');
+    if (!snHf) {
+        snHf = document.createElement('input');
+        snHf.type='hidden'; snHf.name='school_name'; snHf.id='school_name_new';
+        document.getElementById('dataForm')?.appendChild(snHf);
+    }
+    snHf.value = val;
+};
+
 // ============================================
 // DOWNLOAD DATA
 // ============================================
-function downloadData() {
-    const allData=[...state.pendingSubmissions,...state.drafts];
-    if(allData.length===0){ showNotification('No data to download.','info'); return; }
-    const keys=new Set(); allData.forEach(item=>Object.keys(item).forEach(k=>keys.add(k)));
-    const headers=Array.from(keys);
-    let csv=headers.join(',')+'\n';
-    allData.forEach(item=>{
-        csv+=headers.map(h=>{
-            let v=item[h]||'';
-            if(typeof v==='string'&&(v.includes(',')||v.includes('"')||v.includes('\n'))) v='"'+v.replace(/"/g,'""')+'"';
-            return v;
-        }).join(',')+'\n';
-    });
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-    a.download='itn_data_'+new Date().toISOString().split('T')[0]+'.csv';
-    a.click(); URL.revokeObjectURL(a.href);
-    showNotification('Data downloaded!','success');
-}
+
+    // Show loading state on button
+    const btn = document.getElementById('downloadDataBtn');
+    const origHTML = btn ? btn.innerHTML : '';
+    if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:20px;height:20px;animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="30 60"/></svg><br>LOADING';
 
 // ============================================
 // ANALYSIS  (overridden by ai_agent.js)
@@ -2275,13 +2431,11 @@ function showNotification(msg, type) {
 
 function setupEventListeners() {
     // viewDataBtn — handled by guardedAction in HTML
-    // downloadDataBtn — handled by guardedAction in HTML
     // viewAnalysisBtn — handled by guardedAction in HTML
     // viewSummaryBtn — handled by guardedAction in HTML
     // aiAgentBtn — handled by guardedAction in HTML
 
     // Expose download so guardedAction can call it
-    window._downloadData = downloadData;
 
     const df = document.getElementById('dataForm');
     if (df) df.addEventListener('submit', handleSubmit);
@@ -2339,3 +2493,71 @@ window.loadDraft=loadDraft; window.deleteDraft=deleteDraft;
 window.validateITNQuantities=validateITNQuantities;
 
 console.log('[ICF Collect] script_option2.js loaded ✓');
+
+// ============================================
+// SCHOOL QR CODE GENERATOR
+// ============================================
+window.generateSchoolQRCodes = function() {
+    // Generate printable QR codes for all schools in CSV
+    const data = window.ALL_LOCATION_DATA;
+    if (!data) { showNotification('Location data not loaded yet', 'error'); return; }
+
+    const win = window.open('', '_blank');
+    let schools = [];
+    for (const district in data)
+        for (const chiefdom in data[district])
+            for (const phu in data[district][chiefdom])
+                for (const community in data[district][chiefdom][phu])
+                    (data[district][chiefdom][phu][community] || []).forEach(school => {
+                        if (school) schools.push({ district, chiefdom, facility:phu, community, school_name:school });
+                    });
+
+    const qrScript = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+
+    win.document.write(`<!DOCTYPE html><html><head>
+    <title>School QR Codes — ICF-SL SBD 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+    <script src="${qrScript}"><\/script>
+    <style>
+      body{font-family:'Oswald',sans-serif;background:#f4f6f9;padding:16px;}
+      h1{color:#004080;text-align:center;margin-bottom:16px;font-size:18px;}
+      .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+      .card{background:#fff;border-radius:10px;border:2px solid #004080;padding:12px;text-align:center;break-inside:avoid;}
+      .card .district{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.5px;}
+      .card .phu{font-size:10px;color:#004080;font-weight:600;margin:2px 0;}
+      .card .school{font-size:11px;font-weight:700;color:#0d1b2a;margin:4px 0 8px;}
+      .card .community{font-size:9px;color:#607080;}
+      .qr-wrap{display:inline-block;padding:6px;background:#fff;border-radius:6px;}
+      @media print{.no-print{display:none;}body{background:#fff;padding:0;}.card{border:1px solid #004080;}}
+    </style></head><body>
+    <h1>ICF-SL · School QR Codes · SBD 2026</h1>
+    <div class="no-print" style="text-align:center;margin-bottom:16px;">
+      <button onclick="window.print()" style="background:#004080;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">🖨 PRINT ALL (${schools.length} Schools)</button>
+    </div>
+    <div class="grid" id="qrGrid"></div>
+    <script>
+    const schools = ${JSON.stringify(schools)};
+    const grid = document.getElementById('qrGrid');
+    schools.forEach((s, i) => {
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.innerHTML = \`
+        <div class="district">\${s.district} · \${s.chiefdom}</div>
+        <div class="phu">\${s.facility}</div>
+        <div class="school">\${s.school_name}</div>
+        <div class="community">\${s.community}</div>
+        <div class="qr-wrap" id="qr\${i}"></div>
+      \`;
+      grid.appendChild(div);
+      new QRCode(document.getElementById('qr' + i), {
+        text: JSON.stringify(s),
+        width: 140, height: 140,
+        colorDark: '#004080', colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    });
+    <\/script>
+    </body></html>`);
+    win.document.close();
+    showNotification('Generating QR codes for ' + schools.length + ' schools…', 'success');
+};
