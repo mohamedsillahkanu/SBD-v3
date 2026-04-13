@@ -495,27 +495,21 @@ function resetScanUI(mode) {
 // ============================================
 function onScanResult(decoded, mode) {
     stopScan(mode);
-    var parsed;
-    try { parsed = JSON.parse(decoded); } catch(e) {
-        showMessage(mode, 'error', 'INVALID QR CODE', 'Could not read QR. Scan the QR code from the Device Tag app.', '');
-        return;
-    }
-    // Use id field (device tag format) — no .code check
+    var parsed = {};
+    try { parsed = JSON.parse(decoded); } catch(e) { parsed = { raw: decoded }; }
+
+    // Take everything from the QR — no validation, no checks
     var data = {
-        code:     parsed.id       || parsed.code     || '',
+        code:     parsed.id       || parsed.code     || parsed.ID   || decoded.trim(),
         name:     parsed.name     || parsed.Name     || '',
-        phone:    parsed.tel      || parsed.phone    || '',
+        phone:    parsed.tel      || parsed.phone    || parsed.telephone || '',
         role:     parsed.role     || parsed.Role     || '',
         district: parsed.district || parsed.District || '',
         chiefdom: parsed.chiefdom || parsed.Chiefdom || '',
         facility: parsed.facility || parsed.Facility || '',
         year:     parsed.year     || ''
     };
-    if (!data.code) {
-        // Use first available string value as code
-        var vals = Object.values(parsed).filter(function(v){ return typeof v==='string' && v.length>0; });
-        if (vals.length) data.code = vals[0];
-    }
+
     if (mode === 'register') handleRegister(data);
     else handleReturn(data);
 }
