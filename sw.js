@@ -1,7 +1,7 @@
 // ============================================================
 //  SBD 2026 — ITN Distribution Survey · Service Worker
 //  BUMP THIS VERSION STRING every time you upload new files:
-const CACHE_VERSION = 'sbd-2026-v18';
+const CACHE_VERSION = 'sbd-2026-v19';
 // ============================================================
 
 // ── YOUR MAIN APP FILES ───────────────────────────────────────
@@ -23,6 +23,7 @@ const APP_FILES = [
 // Each module HTML is cached so it works offline.
 // If a module uses its own CSV/JS files, add them here too.
 const MODULE_FILES = [
+  // ── App module HTML files ──────────────────────────────────
   './assessment.html',
   './itn_movement.html',
   './itn_received.html',
@@ -31,34 +32,47 @@ const MODULE_FILES = [
   './id_cards.html',
   './device_tag.html',
   './device_tracking.html',
-
+  './attendance_payment.html',
+  // ── CSV data files ─────────────────────────────────────────
+  './dms_cascading.csv',          // itn_movement + itn_received — PHU locations
 ];
 
 // ── CDN LIBRARIES ─────────────────────────────────────────────
 const CDN_FILES = [
+  // ── Fonts ─────────────────────────────────────────────────
   'https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap',
+  // ── Core libraries ────────────────────────────────────────
   'https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js',
   'https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
+  // ── QR scanner / generator ────────────────────────────────
   'https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js',
+  'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
+  // ── PDF / image export ────────────────────────────────────
   'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-  // ── Remote images used as fallbacks ──────────────────────
+  'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js',
+  // ── Remote fallback image ─────────────────────────────────
   'https://github.com/mohamedsillahkanu/gdp-dashboard-2/raw/6c7463b0d5c3be150aafae695a4bcbbd8aeb1499/ICF-SL.jpg',
 ];
 
 // ── OPTIONAL (cached if they exist, silently skipped if not) ──
 const OPTIONAL_FILES = [
-  // ── Module HTML ───────────────────────────────────────────
-  './attendance_payment.html',
+  // ── Extra module HTML ─────────────────────────────────────
   './distribution_report.html',
+  './school_qr_generator.html',
   // ── Images & logos ────────────────────────────────────────
   './ICF-SL.jpg',
+  './NMCP.png',
   './infographics.png',
+  './logo_usaid.png',
+  './logo_gf.png',
   './logo_mohs.png',
   './logo_nmcp.png',
   './logo_pmi.png',
+  './logo_mbsse.png',
   // ── Icons & PWA assets ────────────────────────────────────
   './favicon.svg',
   './icon-192.svg',
@@ -66,8 +80,6 @@ const OPTIONAL_FILES = [
   './icon-512.png',
   './icon-192.png',
   './apple-touch-icon.png',
-  // ── School QR generator tool ──────────────────────────────
-  './school_qr_generator.html',
 ];
 
 // ── NEVER CACHE — always go to live network ───────────────────
