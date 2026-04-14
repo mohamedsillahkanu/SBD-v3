@@ -35,13 +35,24 @@
 
         /* ===== TABS ===== */
         .tabs-container { max-width: 540px; margin: 0 auto; padding: 20px 16px 0; }
-        .tab-bar { display: flex; background: var(--navy); border-radius: 14px; padding: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-        .tab-btn { flex: 1; padding: 12px 6px; border: none; background: transparent; font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); cursor: pointer; border-radius: 11px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .tab-bar { display: flex; background: var(--navy); border-radius: 14px; padding: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .tab-btn { flex: 1; min-width: 72px; padding: 12px 6px; border: none; background: transparent; font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); cursor: pointer; border-radius: 11px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .tab-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
         .tab-btn.active { color: var(--navy); box-shadow: 0 2px 12px rgba(212,160,23,0.3); }
         .tab-btn.register.active { background: linear-gradient(135deg, var(--gold), var(--gold-light)); }
         .tab-btn.return.active { background: linear-gradient(135deg, var(--green), #34d399); color: #fff; }
         .tab-btn.dashboard.active { background: linear-gradient(135deg, var(--navy-light), var(--navy)); color: #fff; }
+        .tab-btn.online.active { background: linear-gradient(135deg, #1a9e45, #0e6b2e); color: #fff; }
+        .tracking-table { width:100%; border-collapse:collapse; font-size:11px; }
+        .tracking-table th { background:var(--navy); color:#fff; padding:8px 10px; text-align:left; font-size:10px; letter-spacing:.5px; }
+        .tracking-table td { padding:8px 10px; border-bottom:1px solid #f1f5f9; vertical-align:top; }
+        .tracking-table tr:hover td { background:#f8fafc; }
+        .status-out { background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:10px; font-size:9px; font-weight:700; white-space:nowrap; }
+        .status-ret { background:#d1fae5; color:#065f46; padding:2px 8px; border-radius:10px; font-size:9px; font-weight:700; white-space:nowrap; }
+        .tracking-empty { text-align:center; padding:40px; color:var(--text-light); font-size:13px; }
+        .pull-btn { background:var(--navy); color:#fff; border:none; border-radius:8px; padding:8px 16px; font-family:Bebas Neue,sans-serif; font-size:13px; letter-spacing:1px; cursor:pointer; display:flex; align-items:center; gap:6px; }
+        .pull-btn svg { width:14px; height:14px; stroke:currentColor; fill:none; }
+        .pull-btn:disabled { opacity:.5; cursor:not-allowed; }
 
         /* ===== MAIN ===== */
         .main { max-width: 540px; margin: 0 auto; padding: 16px 16px 40px; }
@@ -273,9 +284,14 @@
                 RETURN
             </button>
             <button class="tab-btn dashboard" onclick="switchTab('dashboard')">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-                DASHBOARD
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                LOCAL
             </button>
+            <button class="tab-btn online" onclick="switchTab('online')">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0115.36-6.36L21 8M3 22v-6h6M21 12a9 9 0 01-15.36 6.36L3 16"/></svg>
+                ONLINE
+            </button>
+
         </div>
     </div>
 
@@ -364,7 +380,7 @@
             </div>
         </div>
 
-        <!-- DASHBOARD TAB -->
+        <!-- LOCAL DASHBOARD TAB -->
         <div class="tab-panel" id="panel-dashboard">
             <div class="dash-stats">
                 <div class="dash-stat ds-out"><div class="dash-stat-num" id="dOut">0</div><div class="dash-stat-label">Not Returned</div></div>
@@ -383,10 +399,7 @@
                 <div class="filter-body">
                     <div class="filter-field"><div class="filter-label">District</div><select class="filter-select" id="fDistrict" onchange="onDashFilter('district')"><option value="">All Districts</option></select></div>
                     <div class="filter-field"><div class="filter-label">Chiefdom</div><select class="filter-select" id="fChiefdom" disabled onchange="onDashFilter('chiefdom')"><option value="">All Chiefdoms</option></select></div>
-                    <div class="filter-field"><div class="filter-label">Section</div><select class="filter-select" id="fSection" disabled onchange="onDashFilter('section')"><option value="">All Sections</option></select></div>
                     <div class="filter-field"><div class="filter-label">Health Facility</div><select class="filter-select" id="fFacility" disabled onchange="onDashFilter('facility')"><option value="">All Facilities</option></select></div>
-                    <div class="filter-field"><div class="filter-label">Community</div><select class="filter-select" id="fCommunity" disabled onchange="onDashFilter('community')"><option value="">All Communities</option></select></div>
-                    <div class="filter-field"><div class="filter-label">School</div><select class="filter-select" id="fSchool" disabled onchange="onDashFilter('school')"><option value="">All Schools</option></select></div>
                 </div>
                 <div class="filter-active-tags" id="filterTags"></div>
             </div>
@@ -404,8 +417,35 @@
                 </div>
                 <div class="devices-list" id="dRetList"><div class="devices-empty"><svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><p>No devices returned yet</p></div></div>
             </div>
+
         </div>
-    </div>
+
+        <!-- ONLINE DASHBOARD TAB -->
+        <div class="tab-panel" id="panel-online">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <button class="pull-btn" id="pullBtn" onclick="pullFromSheets()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 2v6h-6M3 12a9 9 0 0115.36-6.36L21 8M3 22v-6h6M21 12a9 9 0 01-15.36 6.36L3 16"/></svg>
+                    PULL FROM SHEETS
+                </button>
+            </div>
+            <div id="pullStatus" style="font-size:11px;color:var(--text-light);margin-bottom:10px;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;" id="trackingStats"></div>
+            <div style="background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.05);overflow:hidden;margin-bottom:16px;">
+                <div style="overflow-x:auto;">
+                    <table class="tracking-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th><th>Device ID</th><th>Name</th><th>Role</th>
+                                <th>District</th><th>Chiefdom</th><th>Facility</th>
+                                <th>Issued At</th><th>Returned At</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trackingBody">
+                            <tr><td colspan="9" class="tracking-empty">Tap PULL FROM SHEETS to load all records</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
     <div class="notif" id="notif"></div>
 
@@ -456,7 +496,8 @@ function switchTab(tab) {
     document.getElementById('device-return').classList.remove('show');
     document.getElementById('msg-register').classList.remove('show');
     document.getElementById('msg-return').classList.remove('show');
-    if (tab === 'dashboard') updateDashboard();
+    if (tab === 'dashboard') { updateDashboard(); }
+    if (tab === 'online') { renderTrackingFromLocal(); }
 }
 
 // ============================================
@@ -653,7 +694,7 @@ function submitToSheets(record, callback) {
         district:  record.district  || '',
         chiefdom:  record.chiefdom  || '',
         facility:  record.facility  || '',
-        year:      record.year      || '',
+        year:      record.year      || new Date().getFullYear().toString(),
         timestamp: record.timestamp || new Date().toISOString()
     };
     fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) })
@@ -671,6 +712,10 @@ async function flushPendingQueue() {
             if (idx !== -1) pendingQueue.splice(idx, 1);
             synced++;
         } catch(e) { break; }
+    }
+    if (synced > 0) {
+        lastSyncTime = new Date().toISOString();
+        localStorage.setItem('dt_last_sync', lastSyncTime);
     }
     saveLocal(); updateAll();
     if (synced > 0) showNotif(synced + ' record(s) synced!', 'success');
@@ -733,7 +778,7 @@ function updateHistory() {
 }
 
 function updateSyncInfo() {
-    document.getElementById('syncTime').textContent = lastSyncTime ? 'Last sync: ' + formatTime(lastSyncTime) : (hasValidURL() ? 'Waiting...' : 'Google Sheets URL not configured');
+    document.getElementById('syncTime').textContent = lastSyncTime ? '✓ Last synced: ' + formatTime(lastSyncTime) : (hasValidURL() ? 'Ready to sync when records exist' : 'Google Sheets URL not configured');
 }
 
 function updatePendingBadge() {
@@ -787,19 +832,15 @@ function populateDashFilter() {
 
 function onDashFilter(level) {
     var d = document.getElementById('fDistrict').value, c = document.getElementById('fChiefdom').value,
-        s = document.getElementById('fSection').value,  f = document.getElementById('fFacility').value,
-        co = document.getElementById('fCommunity').value;
-    var levels = ['district','chiefdom','section','facility','community','school'];
-    var selIds = ['fDistrict','fChiefdom','fSection','fFacility','fCommunity','fSchool'];
-    var defaults = ['All Districts','All Chiefdoms','All Sections','All Facilities','All Communities','All Schools'];
+        f = document.getElementById('fFacility').value;
+    var levels = ['district','chiefdom','facility'];
+    var selIds = ['fDistrict','fChiefdom','fFacility'];
+    var defaults = ['All Districts','All Chiefdoms','All Facilities'];
     var idx = levels.indexOf(level);
     for (var i = idx+1; i < levels.length; i++) { var sel = document.getElementById(selIds[i]); sel.innerHTML = '<option value="">' + defaults[i] + '</option>'; sel.disabled = true; }
     var out = registeredDevices.filter(function(d) { return !d.returned; });
     if (level==='district' && d) fillFilter('fChiefdom', [...new Set(out.filter(function(x){return x.district===d;}).map(function(x){return x.chiefdom;}).filter(Boolean))].sort(), 'All Chiefdoms');
-    if (level==='chiefdom' && c) fillFilter('fSection',  [...new Set(out.filter(function(x){return x.district===d&&x.chiefdom===c;}).map(function(x){return x.section;}).filter(Boolean))].sort(), 'All Sections');
-    if (level==='section' && s) fillFilter('fFacility',  [...new Set(out.filter(function(x){return x.district===d&&x.chiefdom===c&&x.section===s;}).map(function(x){return x.facility;}).filter(Boolean))].sort(), 'All Facilities');
-    if (level==='facility' && f) fillFilter('fCommunity',[...new Set(out.filter(function(x){return x.district===d&&x.chiefdom===c&&x.section===s&&x.facility===f;}).map(function(x){return x.community;}).filter(Boolean))].sort(), 'All Communities');
-    if (level==='community' && co) fillFilter('fSchool', [...new Set(out.filter(function(x){return x.district===d&&x.chiefdom===c&&x.section===s&&x.facility===f&&x.community===co;}).map(function(x){return x.school;}).filter(Boolean))].sort(), 'All Schools');
+    if (level==='chiefdom' && c) fillFilter('fFacility', [...new Set(out.filter(function(x){return x.district===d&&x.chiefdom===c;}).map(function(x){return x.facility;}).filter(Boolean))].sort(), 'All Facilities');
     updateFilterTags(); renderDashList();
 }
 
@@ -811,16 +852,16 @@ function fillFilter(selId, items, defaultText) {
 }
 
 function clearDashFilters() {
-    var selIds = ['fDistrict','fChiefdom','fSection','fFacility','fCommunity','fSchool'];
-    var defaults = ['All Districts','All Chiefdoms','All Sections','All Facilities','All Communities','All Schools'];
+    var selIds = ['fDistrict','fChiefdom','fFacility'];
+    var defaults = ['All Districts','All Chiefdoms','All Facilities'];
     selIds.forEach(function(id,i) { var s=document.getElementById(id); if(i===0){s.value='';}else{s.innerHTML='<option value="">'+defaults[i]+'</option>';s.disabled=true;} });
     document.getElementById('filterTags').innerHTML = '';
     populateDashFilter(); renderDashList();
 }
 
 function updateFilterTags() {
-    var selIds = ['fDistrict','fChiefdom','fSection','fFacility','fCommunity','fSchool'];
-    var labels = ['District','Chiefdom','Section','Facility','Community','School'];
+    var selIds = ['fDistrict','fChiefdom','fFacility'];
+    var labels = ['District','Chiefdom','Facility'];
     var tags = [];
     selIds.forEach(function(id,i) { var v=document.getElementById(id).value; if(v) tags.push(labels[i]+': '+v); });
     document.getElementById('filterTags').innerHTML = tags.map(function(t) { return '<span class="filter-tag">'+t+'</span>'; }).join('');
@@ -828,22 +869,18 @@ function updateFilterTags() {
 
 function renderDashList() {
     var d=document.getElementById('fDistrict').value, c=document.getElementById('fChiefdom').value,
-        s=document.getElementById('fSection').value,  f=document.getElementById('fFacility').value,
-        co=document.getElementById('fCommunity').value, sc=document.getElementById('fSchool').value;
+        f=document.getElementById('fFacility').value;
     var devices = registeredDevices.filter(function(x) { return !x.returned; });
     if (d)  devices = devices.filter(function(x) { return x.district===d; });
     if (c)  devices = devices.filter(function(x) { return x.chiefdom===c; });
-    if (s)  devices = devices.filter(function(x) { return x.section===s; });
     if (f)  devices = devices.filter(function(x) { return x.facility===f; });
-    if (co) devices = devices.filter(function(x) { return x.community===co; });
-    if (sc) devices = devices.filter(function(x) { return x.school===sc; });
     devices.sort(function(a,b) { return new Date(b.timestamp)-new Date(a.timestamp); });
     document.getElementById('dListCount').textContent = devices.length;
     var listEl = document.getElementById('dList');
     listEl.innerHTML = devices.length === 0 ?
-        '<div class="devices-empty"><svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="16 8 10 16 7 13"/></svg><p>' + (d||c||s ? 'No unreturned devices match this filter' : 'All devices have been returned!') + '</p></div>' :
+        '<div class="devices-empty"><svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="16 8 10 16 7 13"/></svg><p>' + (d||c||f ? 'No unreturned devices match this filter' : 'All devices have been returned!') + '</p></div>' :
         devices.map(function(x) { return '<div class="device-row"><div class="device-row-top"><div class="device-row-name">' + (x.name||'Unknown') + '</div><div class="device-row-code">' + x.code + '</div></div><div class="device-row-phone">' + (x.phone||'—') + '</div><div class="device-row-details">' + [x.role,x.district,x.chiefdom,x.facility].filter(Boolean).map(function(t){return '<span class="device-row-tag">'+t+'</span>';}).join('') + '</div><div class="device-row-time"><svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Registered: ' + formatTime(x.timestamp) + '</div></div>'; }).join('');
-    var returned = returnedDevices.filter(function(x) { return (!d||x.district===d)&&(!c||x.chiefdom===c)&&(!s||x.section===s)&&(!f||x.facility===f)&&(!co||x.community===co)&&(!sc||x.school===sc); });
+    var returned = returnedDevices.filter(function(x) { return (!d||x.district===d)&&(!c||x.chiefdom===c)&&(!f||x.facility===f); });
     returned.sort(function(a,b) { return new Date(b.timestamp)-new Date(a.timestamp); });
     document.getElementById('dRetListCount').textContent = returned.length;
     var retEl = document.getElementById('dRetList');
@@ -884,6 +921,161 @@ async function silentSync() {
 
 document.addEventListener('visibilitychange', function() { if (!document.hidden && isOnline && hasValidURL()) silentSync(); });
 window.addEventListener('online', function() { updateOnlineStatus(); if (hasValidURL()) { showNotif('Back online — syncing...','info'); setTimeout(function(){flushPendingQueue();silentSync();},1000); } });
+
+// ============================================
+// TRACKING TAB — pull from Google Sheets
+// ============================================
+var trackingRecords = [];
+
+// ── Build a deduplication key for a record ──────────────────
+function recordKey(r) {
+    return (r.code || r['Device ID'] || '').toLowerCase() + '|' +
+           (r.status || r.action || '').toLowerCase() + '|' +
+           (r.issued_at || r['Issued At'] || r.timestamp || '').substring(0, 16);
+}
+
+// ── Map local record to display format ──────────────────────
+function localToDisplay(r) {
+    return {
+        status:      r.action === 'REGISTER' ? 'Device Out' : 'Returned',
+        code:        r.code     || '',
+        name:        r.name     || '',
+        role:        r.role     || '',
+        district:    r.district || '',
+        chiefdom:    r.chiefdom || '',
+        facility:    r.facility || '',
+        issued_at:   r.issued_at  || (r.action === 'REGISTER' ? r.timestamp : ''),
+        returned_at: r.returned_at || (r.action === 'RETURN'  ? r.timestamp : ''),
+        _source:     r.synced ? 'synced' : 'pending'
+    };
+}
+
+// ── Merge local + sheets, deduplicate ───────────────────────
+function mergeRecords(sheetRecords) {
+    var seen = {};
+    var merged = [];
+
+    // Sheets records take priority — add first
+    (sheetRecords || []).forEach(function(r) {
+        r._source = 'sheets';
+        var k = recordKey(r);
+        seen[k] = true;
+        merged.push(r);
+    });
+
+    // Add local records not already in sheets
+    var all = [...registeredDevices, ...returnedDevices];
+    all.forEach(function(r) {
+        var d = localToDisplay(r);
+        var k = recordKey(d);
+        if (!seen[k]) {
+            seen[k] = true;
+            merged.push(d);
+        }
+    });
+
+    // Sort newest first
+    merged.sort(function(a, b) {
+        var ta = a.issued_at || a['Issued At'] || a.returned_at || a['Returned At'] || '';
+        var tb = b.issued_at || b['Issued At'] || b.returned_at || b['Returned At'] || '';
+        return new Date(tb) - new Date(ta);
+    });
+
+    return merged;
+}
+
+async function pullFromSheets() {
+    switchTab('online');
+    var btn = document.getElementById('pullBtn');
+    var statusEl = document.getElementById('pullStatus');
+    btn.disabled = true;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" style="animation:spin .7s linear infinite"><path d="M21 2v6h-6M3 12a9 9 0 0115.36-6.36L21 8M3 22v-6h6M21 12a9 9 0 01-15.36 6.36L3 16"/></svg> PULLING...';
+    statusEl.textContent = 'Fetching from Google Sheets...';
+
+    try {
+        var res = await Promise.race([
+            fetch(SCRIPT_URL + '?action=getDeviceTracking&t=' + Date.now()),
+            new Promise(function(_,r){ setTimeout(function(){ r(new Error('timeout')); }, 10000); })
+        ]);
+        var json = await res.json();
+        if (json && json.records) {
+            trackingRecords = mergeRecords(json.records);
+            var sheetCount  = json.records.length;
+            var localOnly   = trackingRecords.filter(function(r){ return r._source === 'pending'; }).length;
+            statusEl.textContent = '✓ ' + sheetCount + ' from Sheets' +
+                (localOnly > 0 ? ' + ' + localOnly + ' pending local' : '') +
+                ' · ' + new Date().toLocaleTimeString();
+            renderTrackingTable(trackingRecords);
+        } else {
+            statusEl.textContent = '⚠ No records from Sheets — showing local only.';
+            renderTrackingFromLocal();
+        }
+    } catch(e) {
+        statusEl.textContent = '⚠ Offline — showing local records only.';
+        renderTrackingFromLocal();
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 2v6h-6M3 12a9 9 0 0115.36-6.36L21 8M3 22v-6h6M21 12a9 9 0 01-15.36 6.36L3 16"/></svg> PULL FROM SHEETS';
+}
+
+function renderTrackingFromLocal() {
+    var all = [...registeredDevices, ...returnedDevices];
+    var mapped = all.map(localToDisplay);
+    mapped.sort(function(a,b){ return new Date(b.issued_at||b.returned_at||0) - new Date(a.issued_at||a.returned_at||0); });
+    renderTrackingTable(mapped);
+    document.getElementById('pullStatus').textContent = 'Local records only — tap PULL FROM SHEETS to merge with Sheets.';
+}
+
+function renderTrackingTable(records) {
+    var out = records.filter(function(r){ return (r.status||'').toLowerCase().indexOf('out') !== -1; }).length;
+    var ret = records.filter(function(r){ return (r.status||'').toLowerCase().indexOf('return') !== -1; }).length;
+
+    document.getElementById('trackingStats').innerHTML =
+        '<div style="background:#fff;border-radius:10px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid var(--gold);">' +
+            '<div style="font-family:Bebas Neue,sans-serif;font-size:28px;color:var(--gold-dark);">' + records.length + '</div>' +
+            '<div style="font-size:10px;color:var(--text-light);">TOTAL</div></div>' +
+        '<div style="background:#fff;border-radius:10px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid var(--red);">' +
+            '<div style="font-family:Bebas Neue,sans-serif;font-size:28px;color:var(--red);">' + out + '</div>' +
+            '<div style="font-size:10px;color:var(--text-light);">DEVICES OUT</div></div>' +
+        '<div style="background:#fff;border-radius:10px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid var(--green);">' +
+            '<div style="font-family:Bebas Neue,sans-serif;font-size:28px;color:var(--green-dark);">' + ret + '</div>' +
+            '<div style="font-size:10px;color:var(--text-light);">RETURNED</div></div>';
+
+    var tbody = document.getElementById('trackingBody');
+    if (!records.length) {
+        tbody.innerHTML = '<tr><td colspan="9" class="tracking-empty">No records found</td></tr>';
+        return;
+    }
+    tbody.innerHTML = records.map(function(r) {
+        var isOut = (r.status||'').toLowerCase().indexOf('out') !== -1;
+        var badge = isOut
+            ? '<span class="status-out">DEVICE OUT</span>'
+            : '<span class="status-ret">RETURNED</span>';
+        var srcBadge = r._source === 'pending'
+            ? '<span style="background:#fff3cd;color:#856404;padding:1px 6px;border-radius:8px;font-size:9px;font-weight:700;vertical-align:middle;margin-left:4px;">PENDING</span>'
+            : '';
+        return '<tr>' +
+            '<td>' + badge + '</td>' +
+            '<td style="font-weight:700;color:var(--navy);">' + (r.code||r['Device ID']||'—') + srcBadge + '</td>' +
+            '<td>' + (r.name||r['Full Name']||'—') + '</td>' +
+            '<td>' + (r.role||r['Role']||'—') + '</td>' +
+            '<td>' + (r.district||r['District']||'—') + '</td>' +
+            '<td>' + (r.chiefdom||r['Chiefdom']||'—') + '</td>' +
+            '<td>' + (r.facility||r['Health Facility']||'—') + '</td>' +
+            '<td style="font-size:10px;color:var(--text-light);">' + formatTrackTime(r.issued_at||r['Issued At']||'') + '</td>' +
+            '<td style="font-size:10px;color:var(--text-light);">' + formatTrackTime(r.returned_at||r['Returned At']||'') + '</td>' +
+            '</tr>';
+    }).join('');
+}
+
+function formatTrackTime(ts) {
+    if (!ts) return '—';
+    try {
+        var d = new Date(ts);
+        return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    } catch(e) { return ts; }
+}
 
 // ============================================
 // INIT
