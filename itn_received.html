@@ -653,83 +653,36 @@ function stopScan() {
     document.getElementById('stopScanBtn').style.display  = 'none';
 }
 
-async function processQR(raw) {
+function processQR(raw) {
     let data;
-    try { data = JSON.parse(raw); } catch { showToast('Invalid QR — not an ICF-SL code', 'error'); return; }
+    try { data = JSON.parse(raw); } catch { showToast('Invalid QR — not an ICF-SL delivery code', 'error'); return; }
     if (data.type !== 'ICF-SL-DELIVERY' && data.type !== 'ICF-SL-ITN-MOVEMENT') {
         showToast('QR is not an ICF-SL delivery receipt', 'error'); return;
     }
-
-    // Normalise QR fields (itn_movement QR uses slightly different keys)
-    const dispId = data.dispatch_id || data.dispatchId || '';
-    showToast('QR scanned — verifying with Google Sheets…', 'info');
-
-    // ── Verify against Google Sheets (source of truth) ──────────
-    if (dispId) {
-        try {
-            const res = await Promise.race([
-                fetch(WEBHOOK_URL + '?action=getDispatch&id=' + encodeURIComponent(dispId)),
-                new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 8000))
-            ]);
-            if (res.ok) {
-                const sheetData = await res.json();
-                if (sheetData && sheetData.dispatch_id) {
-                    // Use Sheet data as authoritative — overrides QR data
-                    scannedData = normaliseDispatch(sheetData);
-                    prefillForm(scannedData);
-                    showToast('✅ QR verified on Google Sheets', 'success');
-                    return;
-                }
-            }
-        } catch(e) { console.warn('[QR verify] GAS failed:', e.message); }
-    }
-
-    // GAS unavailable — use QR data directly
-    scannedData = normaliseDispatch({ ...data, dispatch_id: dispId });
+    // Use QR data directly — no Google Sheets check
+    scannedData = normaliseDispatch({ ...data, dispatch_id: data.dispatch_id || data.dispatchId || '' });
     prefillForm(scannedData);
-    showToast('QR scanned (offline — not verified on Sheets)', 'info');
+    showToast('✅ QR scanned — verify details below', 'success');
 }
 
 document.getElementById('manualLookupBtn').addEventListener('click', () => lookupDispatch());
 document.getElementById('manualDispId').addEventListener('keydown', e => { if(e.key==='Enter') lookupDispatch(); });
 
-async function lookupDispatch() {
+function lookupDispatch() {
     const id = document.getElementById('manualDispId').value.trim().toUpperCase();
     if (!id) { showToast('Enter a dispatch ID', 'error'); return; }
-
     const btn = document.getElementById('manualLookupBtn');
     btn.disabled = true; btn.textContent = 'Searching…';
-
-    // ── 1. Check Google Sheets first (source of truth) ─────────
-    try {
-        const res = await Promise.race([
-            fetch(WEBHOOK_URL + '?action=getDispatch&id=' + encodeURIComponent(id)),
-            new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 8000))
-        ]);
-        if (res.ok) {
-            const d = await res.json();
-            if (d && d.dispatch_id) {
-                scannedData = normaliseDispatch(d);
-                prefillForm(scannedData);
-                showToast('✅ Dispatch found on Google Sheets', 'success');
-                btn.disabled = false; btn.textContent = 'LOOKUP';
-                return;
-            }
-        }
-    } catch(e) { console.warn('[Lookup] GAS failed:', e.message); }
-
-    // ── 2. Fall back to local localStorage ─────────────────────
+    // Check local records only
     const dmsRecords = JSON.parse(store.get('dms_chiefdom_records','[]'));
     const rec = dmsRecords.find(r => (r.id||'').toUpperCase() === id);
     if (rec) {
         scannedData = normaliseDispatch(rec);
         prefillForm(scannedData);
-        showToast('Dispatch found locally', 'info');
-        btn.disabled = false; btn.textContent = 'LOOKUP';
-        return;
+        showToast('Dispatch found', 'success');
+    } else {
+        showToast('Dispatch ID "' + id + '" not found locally. Scan the QR instead.', 'error');
     }
-
-    showToast('Dispatch ID "' + id + '" not found on Sheets or locally', 'error');
     btn.disabled = false; btn.textContent = 'LOOKUP';
 }
 
@@ -755,7 +708,7 @@ function normaliseDispatch(d) {
 }
 
 function prefillForm(data) {
-    // ── PHU/District mismatch check using cascade data ─────────
+    // ── Facility match check — PHU in QR must match user's PHU from login ─────
     var dispatchDistrict = (data.district || '').trim();
     var dispatchPHU      = (data.phu      || '').trim();
     var userDistrict     = (currentUser && currentUser.district || '').trim();
