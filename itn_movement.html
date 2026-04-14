@@ -808,10 +808,6 @@ function goStep2() {
   const dualai=parseInt(document.getElementById('qty-dualai').value)||0;
   if (!district||!chiefdom||!phu) { toast('Select District, Chiefdom and PHU.','error'); return; }
   if (dualai===0) { toast('Enter Dual-AI ITN quantity.','error'); return; }
-  // Hard duplicate check
-  const dupKey=(district+'|'+chiefdom+'|'+phu).toLowerCase();
-  const dup=dispatches.find(r=>((r.destination_district||'')+'|'+(r.chiefdom||'')+'|'+(r.phu||'')).toLowerCase()===dupKey);
-  if (dup) { toast('This PHU already has a dispatch — '+dup.dispatch_id,'error'); return; }
   form.district=district; form.chiefdom=chiefdom; form.phu=phu; form.dualai=dualai;
   setStep(2);
 }
