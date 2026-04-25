@@ -3,117 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>ICF-SL · Submissions Summary</title>
+<title>ICF-SL · Submissions</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Oswald',sans-serif;background:#f0f4f8;min-height:100vh;}
 
-.hdr{background:linear-gradient(135deg,#004080,#1a6abf);padding:16px 20px;display:flex;align-items:center;gap:14px;color:#fff;}
+.hdr{background:linear-gradient(135deg,#004080,#1a6abf);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;color:#fff;}
+.hdr-left{display:flex;align-items:center;gap:14px;}
 .hdr-icon{width:42px;height:42px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;}
 .hdr-title{font-size:16px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;}
 .hdr-sub{font-size:10px;color:rgba(255,255,255,.7);margin-top:2px;}
+.close-btn{background:rgba(255,255,255,.2);border:none;color:#fff;padding:8px 14px;border-radius:6px;font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;}
+.close-btn:hover{background:rgba(255,255,255,.3);}
 
-.body{padding:16px;max-width:1000px;margin:0 auto;}
+.login-container{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#004080,#1a6abf);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.login-box{background:#fff;border-radius:12px;padding:30px;text-align:center;box-shadow:0 10px 40px rgba(0,64,128,.3);}
+.login-title{font-size:18px;font-weight:700;color:#004080;margin-bottom:10px;letter-spacing:.5px;}
+.login-sub{font-size:12px;color:#6b7280;margin-bottom:24px;}
+.login-input{width:100%;padding:12px;border:1px solid #d0dce8;border-radius:8px;font-family:'Oswald',sans-serif;font-size:13px;margin-bottom:16px;}
+.login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#004080,#1a6abf);color:#fff;border:none;border-radius:8px;font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
+.login-btn:hover{box-shadow:0 4px 12px rgba(0,64,128,.3);}
+.login-error{color:#dc3545;font-size:12px;margin-top:12px;}
 
-.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:20px;}
-.stat-card{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:4px solid;}
-.stat-card.total{border-color:#004080;}
-.stat-card.synced{border-color:#10b981;}
-.stat-card.failed{border-color:#dc3545;}
-.stat-card.pending{border-color:#f59e0b;}
-
-.stat-val{font-size:22px;font-weight:700;margin:6px 0;}
-.stat-lbl{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.4px;}
+.body{padding:16px;max-width:1200px;margin:0 auto;}
 
 .controls{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
 .btn{padding:10px 16px;border:none;border-radius:8px;font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .2s;}
 .btn-primary{background:#004080;color:#fff;}
 .btn-primary:hover{background:#1a6abf;box-shadow:0 2px 8px rgba(0,64,128,.3);}
-.btn-danger{background:#dc3545;color:#fff;}
-.btn-danger:hover{background:#bb2d3b;}
-
-.filters{background:#fff;border-radius:12px;padding:12px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.06);}
-.filter-chip{padding:6px 12px;background:#f0f4f8;border:1px solid #d0dce8;border-radius:20px;font-size:10px;cursor:pointer;transition:all .2s;}
-.filter-chip.active{background:#004080;color:#fff;border-color:#004080;}
 
 .table-wrap{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);}
-.table{width:100%;border-collapse:collapse;}
-.table th{background:linear-gradient(135deg,#ecfdf5,#f0fdf4);padding:12px;text-align:left;font-size:11px;font-weight:700;color:#047857;letter-spacing:.4px;border-bottom:1px solid #d1fae5;}
-.table td{padding:11px 12px;border-bottom:1px solid #f0f4f8;font-size:11px;}
+.table{width:100%;border-collapse:collapse;font-size:11px;}
+.table th{background:linear-gradient(135deg,#ecfdf5,#f0fdf4);padding:12px;text-align:left;font-weight:700;color:#047857;letter-spacing:.4px;border-bottom:1px solid #d1fae5;}
+.table td{padding:11px 12px;border-bottom:1px solid #f0f4f8;}
 .table tr:hover{background:#f9fafb;}
 .table tr:last-child td{border-bottom:none;}
 
-.status-badge{display:inline-block;padding:4px 10px;border-radius:12px;font-size:10px;font-weight:600;letter-spacing:.3px;}
+.status-badge{display:inline-block;padding:4px 10px;border-radius:12px;font-size:9px;font-weight:600;letter-spacing:.3px;}
 .status-synced{background:#d1fae5;color:#065f46;}
 .status-failed{background:#fee2e2;color:#7f1d1d;}
-.status-pending{background:#fef3c7;color:#92400e;}
 
-.action-btn{padding:5px 10px;border:none;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;background:#004080;color:#fff;transition:all .2s;}
+.action-btn{padding:6px 12px;border:none;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;background:#004080;color:#fff;transition:all .2s;}
 .action-btn:hover{background:#1a6abf;}
-
-.empty{text-align:center;padding:40px 20px;color:#6b7280;}
-
-.progress-container{margin:10px 0;}
-.progress-bar{height:6px;background:#dbeafe;border-radius:3px;overflow:hidden;}
-.progress-fill{height:100%;background:#004080;border-radius:3px;transition:width .3s;}
+.view-btn{background:#0d9488;margin-right:6px;}
+.view-btn:hover{background:#0f766e;}
+.resync-btn{background:#f59e0b;}
+.resync-btn:hover{background:#d97706;}
 
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
 .modal.show{display:flex;}
-.modal-content{background:#fff;border-radius:12px;padding:20px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;}
-.modal-title{font-size:16px;font-weight:700;color:#004080;margin-bottom:12px;}
-.modal-body{font-size:12px;color:#6b7280;line-height:1.6;}
+.modal-content{background:#fff;border-radius:12px;padding:20px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;}
+.modal-title{font-size:16px;font-weight:700;color:#004080;margin-bottom:16px;}
+.modal-body{font-size:11px;color:#6b7280;line-height:1.6;}
+.data-item{background:#f9fafb;padding:10px;border-radius:6px;margin-bottom:8px;}
+.data-label{font-weight:700;color:#004080;font-size:10px;letter-spacing:.3px;}
+.data-value{color:#6b7280;margin-top:2px;}
 .modal-footer{margin-top:16px;display:flex;gap:10px;justify-content:flex-end;}
+
+.empty{text-align:center;padding:40px 20px;color:#6b7280;}
 </style>
 </head>
 <body>
 
+<div class="login-container" id="loginContainer">
+  <div class="login-box">
+    <div class="login-title">🔐 Submissions Access</div>
+    <div class="login-sub">Enter password to continue</div>
+    <input type="password" id="passwordInput" class="login-input" placeholder="Password" onkeypress="if(event.key==='Enter') checkPassword()">
+    <button class="login-btn" onclick="checkPassword()">Unlock</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<div id="mainContent" style="display:none;">
+
 <div class="hdr">
-  <div class="hdr-icon">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
-      <path d="M9 11l3 3L22 4"/>
-    </svg>
+  <div class="hdr-left">
+    <div class="hdr-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+        <path d="M9 11l3 3L22 4"/>
+      </svg>
+    </div>
+    <div>
+      <div class="hdr-title">Submissions</div>
+      <div class="hdr-sub">View and resync offline submissions</div>
+    </div>
   </div>
-  <div>
-    <div class="hdr-title">Submissions Summary</div>
-    <div class="hdr-sub">View all submitted forms and resync failed submissions</div>
-  </div>
+  <button class="close-btn" onclick="goBack()">← BACK</button>
 </div>
 
 <div class="body">
 
-  <div class="stats-grid">
-    <div class="stat-card total">
-      <div class="stat-lbl">Total Submissions</div>
-      <div class="stat-val" id="statTotal">—</div>
-    </div>
-    <div class="stat-card synced">
-      <div class="stat-lbl">Synced ✓</div>
-      <div class="stat-val" id="statSynced">—</div>
-    </div>
-    <div class="stat-card failed">
-      <div class="stat-lbl">Failed ✗</div>
-      <div class="stat-val" id="statFailed">—</div>
-    </div>
-    <div class="stat-card pending">
-      <div class="stat-lbl">Pending</div>
-      <div class="stat-val" id="statPending">—</div>
-    </div>
-  </div>
-
   <div class="controls">
     <button class="btn btn-primary" onclick="resyncFailed('failed')">🔄 RESYNC FAILED</button>
     <button class="btn btn-primary" onclick="resyncFailed('all')" style="background:#1a6abf;">↻ RESYNC ALL</button>
-    <button class="btn btn-primary" onclick="downloadCSV()">📥 EXPORT CSV</button>
     <button class="btn btn-primary" onclick="location.reload()">🔃 REFRESH</button>
-  </div>
-
-  <div class="filters">
-    <span style="font-size:10px;color:#6b7280;padding:6px 0;">Filter:</span>
-    <div class="filter-chip active" onclick="filterSubmissions('all')">All</div>
-    <div class="filter-chip" onclick="filterSubmissions('synced')">Synced Only</div>
-    <div class="filter-chip" onclick="filterSubmissions('failed')">Failed Only</div>
-    <div class="filter-chip" onclick="filterSubmissions('pending')">Pending Only</div>
   </div>
 
   <div class="table-wrap">
@@ -122,32 +107,44 @@ body{font-family:'Oswald',sans-serif;background:#f0f4f8;min-height:100vh;}
         <tr>
           <th>#</th>
           <th>Date</th>
-          <th>School</th>
           <th>District</th>
           <th>Chiefdom</th>
-          <th>Total ITNs</th>
+          <th>PHU</th>
+          <th>Community</th>
+          <th>School</th>
+          <th>View Data</th>
           <th>Status</th>
-          <th>Action</th>
+          <th>Resync</th>
         </tr>
       </thead>
       <tbody id="submissionsBody">
-        <tr><td colspan="8" style="text-align:center;padding:40px;color:#94a3b8;">Loading submissions...</td></tr>
+        <tr><td colspan="10" style="text-align:center;padding:40px;color:#94a3b8;">Loading submissions...</td></tr>
       </tbody>
     </table>
   </div>
 
 </div>
 
+</div>
+
+<div class="modal" id="dataModal">
+  <div class="modal-content">
+    <div class="modal-title">📋 Submission Data</div>
+    <div class="modal-body" id="modalData"></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="resyncModal">
   <div class="modal-content">
-    <div class="modal-title">Resyncing Failed Submissions...</div>
+    <div class="modal-title">🔄 Resyncing...</div>
     <div class="modal-body">
       <div style="margin-bottom:16px;">
         <div style="font-size:11px;color:#6b7280;margin-bottom:8px;">Progress:</div>
-        <div class="progress-container">
-          <div class="progress-bar">
-            <div class="progress-fill" id="resyncProgress" style="width:0%"></div>
-          </div>
+        <div style="height:6px;background:#dbeafe;border-radius:3px;overflow:hidden;">
+          <div id="resyncProgress" style="height:100%;background:#004080;border-radius:3px;width:0%;transition:width .3s;"></div>
         </div>
       </div>
       <div id="resyncLog" style="background:#f9fafb;padding:10px;border-radius:6px;max-height:300px;overflow-y:auto;font-size:10px;color:#6b7280;font-family:monospace;line-height:1.5;"></div>
@@ -162,103 +159,114 @@ body{font-family:'Oswald',sans-serif;background:#f0f4f8;min-height:100vh;}
 <script>
 
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbymRy-M5v0fVLWUjw4IXYhd1oIR2ZvnP_Dzr_iGR-Th0cMIpmE2ntGeujWYH7-C6NHIzA/exec';
+const PASSWORD = 'admin123';
 let allSubmissions = [];
-let currentFilter = 'all';
+let isAuthenticated = false;
+
+function checkPassword() {
+    const pwd = document.getElementById('passwordInput').value;
+    if (pwd === PASSWORD) {
+        isAuthenticated = true;
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        loadSubmissions();
+    } else {
+        document.getElementById('loginError').textContent = 'Incorrect password';
+        document.getElementById('passwordInput').value = '';
+    }
+}
+
+function goBack() {
+    window.close();
+}
 
 async function loadSubmissions() {
     try {
-        // Get offline submissions from localStorage
         const offlineSubs = JSON.parse(localStorage.getItem('offlineSubmissions') || '[]');
         
-        // Get online submissions from GAS
         const onlineSubs = await fetch(SCRIPT_URL + '?action=getData')
             .then(r => r.json())
             .then(r => r.data || [])
             .catch(() => []);
 
-        // Create set of synced submission IDs
         const syncedIds = new Set(onlineSubs.map(s => s._submission_id).filter(Boolean));
 
-        // Build display data
         allSubmissions = offlineSubs.map((sub, idx) => ({
             index: idx + 1,
             _submission_id: sub._submission_id || '',
             date: sub.submission_timestamp || sub.date || '—',
-            school: (sub.school_name || sub['School Name'] || '').trim(),
             district: (sub.district || sub.District || '').trim(),
             chiefdom: (sub.chiefdom || sub.Chiefdom || '').trim(),
-            total_itn: sub.total_itn || sub['Total ITNs'] || 0,
+            phu: (sub.facility || sub['Health Facility (PHU)'] || '').trim(),
+            community: (sub.community || sub['Community / Village'] || '').trim(),
+            school: (sub.school_name || sub['School Name'] || '').trim(),
             isSynced: syncedIds.has(sub._submission_id),
             raw: sub
         }));
 
         renderTable();
-        updateStats();
 
     } catch(e) {
         console.error('Load error:', e);
     }
 }
 
-function updateStats() {
-    const total = allSubmissions.length;
-    const synced = allSubmissions.filter(s => s.isSynced).length;
-    const failed = allSubmissions.filter(s => !s.isSynced && !s.raw._submission_id).length;
-    const pending = allSubmissions.filter(s => !s.isSynced && s.raw._submission_id).length;
-
-    document.getElementById('statTotal').textContent = total;
-    document.getElementById('statSynced').textContent = synced;
-    document.getElementById('statFailed').textContent = failed;
-    document.getElementById('statPending').textContent = pending;
-}
-
 function renderTable() {
-    const filtered = currentFilter === 'all' ? allSubmissions :
-                     currentFilter === 'synced' ? allSubmissions.filter(s => s.isSynced) :
-                     currentFilter === 'failed' ? allSubmissions.filter(s => !s.isSynced) :
-                     allSubmissions;
-
     const body = document.getElementById('submissionsBody');
-    if (!filtered.length) {
-        body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#94a3b8;">No submissions found</td></tr>';
+    if (!allSubmissions.length) {
+        body.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#94a3b8;">No submissions found</td></tr>';
         return;
     }
 
-    body.innerHTML = filtered.map((s, i) => `
+    body.innerHTML = allSubmissions.map((s, i) => `
         <tr>
             <td>${s.index}</td>
             <td style="font-size:10px;">${formatDate(s.date)}</td>
-            <td style="font-weight:600;color:#0d9488;">${s.school}</td>
             <td>${s.district}</td>
             <td>${s.chiefdom}</td>
-            <td style="text-align:right;">${s.total_itn}</td>
+            <td>${s.phu}</td>
+            <td>${s.community}</td>
+            <td style="font-weight:600;color:#0d9488;max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.school}</td>
+            <td><button class="action-btn view-btn" onclick="viewData('${s._submission_id}')">View</button></td>
             <td>
                 <span class="status-badge ${s.isSynced ? 'status-synced' : 'status-failed'}">
-                    ${s.isSynced ? '✓ Synced' : '✗ Failed'}
+                    ${s.isSynced ? '✓' : '✗'}
                 </span>
             </td>
-            <td>
-                <button class="action-btn" onclick="resyncOne('${s._submission_id}', '${s.school}')">Resync</button>
-            </td>
+            <td><button class="action-btn resync-btn" onclick="resyncOne('${s._submission_id}', '${s.school}')">↻</button></td>
         </tr>
     `).join('');
-}
-
-function filterSubmissions(filter) {
-    currentFilter = filter;
-    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-    event.target.classList.add('active');
-    renderTable();
 }
 
 function formatDate(dateStr) {
     if (!dateStr || dateStr === '—') return '—';
     try {
         const d = new Date(dateStr);
-        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     } catch {
         return dateStr;
     }
+}
+
+function viewData(subId) {
+    const sub = allSubmissions.find(s => s._submission_id === subId);
+    if (!sub) return;
+
+    const html = Object.entries(sub.raw)
+        .filter(([k]) => !k.startsWith('_') && k !== 'submission_timestamp')
+        .map(([k, v]) => `
+            <div class="data-item">
+                <div class="data-label">${k}</div>
+                <div class="data-value">${v || '—'}</div>
+            </div>
+        `).join('');
+
+    document.getElementById('modalData').innerHTML = html;
+    document.getElementById('dataModal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('dataModal').classList.remove('show');
 }
 
 async function resyncFailed(mode = 'failed') {
@@ -291,27 +299,25 @@ async function resyncFailed(mode = 'failed') {
             }).then(r => r.text());
 
             if (result.includes('success') || result.includes('OK')) {
-                logResync(`✓ ${sub.school} synced successfully`);
+                logResync(`✓ Synced`);
                 success++;
             } else {
-                logResync(`✗ ${sub.school} sync response: ${result.substring(0, 100)}`);
+                logResync(`✗ Failed`);
                 errors++;
             }
         } catch(e) {
-            logResync(`✗ ${sub.school} error: ${e.message}`);
+            logResync(`✗ Error: ${e.message}`);
             errors++;
         }
 
-        await new Promise(r => setTimeout(r, 500)); // Rate limit
+        await new Promise(r => setTimeout(r, 500));
     }
 
     logResync(`\n━━━ COMPLETE ━━━`);
     logResync(`✓ Synced: ${success}`);
     logResync(`✗ Failed: ${errors}`);
     
-    setTimeout(() => {
-        loadSubmissions();
-    }, 1000);
+    setTimeout(() => loadSubmissions(), 1000);
 }
 
 function resyncOne(subId, schoolName) {
@@ -319,7 +325,7 @@ function resyncOne(subId, schoolName) {
     if (!sub) return;
     
     showResyncModal();
-    logResync(`Resyncing: ${schoolName || sub.school}...`);
+    logResync(`Resyncing: ${schoolName}...`);
 
     fetch(SCRIPT_URL, {
         method: 'POST',
@@ -331,7 +337,7 @@ function resyncOne(subId, schoolName) {
         if (result.includes('success') || result.includes('OK')) {
             logResync(`✓ Synced successfully!`);
         } else {
-            logResync(`✗ Sync response: ${result.substring(0, 200)}`);
+            logResync(`Response: ${result.substring(0, 200)}`);
         }
         setTimeout(() => loadSubmissions(), 1000);
     }).catch(e => {
@@ -356,24 +362,8 @@ function logResync(msg) {
     log.scrollTop = log.scrollHeight;
 }
 
-function downloadCSV() {
-    const csv = [
-        ['Date', 'School', 'District', 'Chiefdom', 'Total ITNs', 'Status'].join(','),
-        ...allSubmissions.map(s => 
-            [s.date, s.school, s.district, s.chiefdom, s.total_itn, s.isSynced ? 'Synced' : 'Failed'].join(',')
-        )
-    ].join('\n');
-
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `submissions-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-}
-
-loadSubmissions();
-setInterval(loadSubmissions, 30000); // Refresh every 30 seconds
+// Focus on password input
+document.getElementById('passwordInput').focus();
 
 </script>
 </body>
